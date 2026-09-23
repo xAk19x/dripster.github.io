@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRIPSTER — Wall Art For The Main Character</title>
+  
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700;900&display=swap" rel="stylesheet">
+  
+  <!-- daisyUI + Tailwind -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5/daisyui.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+  <style>
+    @theme {
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-sans: 'Plus Jakarta Sans', sans-serif;
+      --color-drip-lime: #CCFF00;
+      --color-drip-purple: #7C3AED;
+      --color-drip-pink: #FF3366;
+      --color-drip-cyan: #00E5FF;
+      --color-drip-dark: #0D0E12;
+      --color-drip-card: #14161D;
+      --color-drip-border: #232733;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: #0B0C0E;
+      color: #F4F4F6;
+      overflow-x: hidden;
+    }
+
+    .font-display {
+      font-family: var(--font-display);
+    }
+
+    /* Subtle custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0C0E;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #232733;
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #CCFF00;
+    }
+
+    /* Street sticker effect */
+    .sticker-badge {
+      box-shadow: 3px 3px 0px rgba(0,0,0,0.85);
+      transform-origin: center;
+    }
+
+    /* Smooth page view display */
+    .page-section {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.25s ease-in-out;
+    }
+    .page-section.active {
+      display: block;
+      opacity: 1;
+    }
+
+    /* Glass elements */
+    .glass-panel {
+      background: rgba(20, 22, 29, 0.7);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .glow-lime {
+      box-shadow: 0 0 25px -5px rgba(204, 255, 0, 0.45);
+    }
+    .glow-pink {
+      box-shadow: 0 0 25px -5px rgba(255, 51, 102, 0.45);
+    }
+    .glow-purple {
+      box-shadow: 0 0 25px -5px rgba(124, 58, 237, 0.45);
+    }
+
+    /* Frame preview border styles */
+    .frame-matte-black {
+      border: 14px solid #111113;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.15);
+    }
+    .frame-raw-oak {
+      border: 14px solid #9C7248;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(255,255,255,0.2);
+    }
+    .frame-neon-volt {
+      border: 14px solid #CCFF00;
+      box-shadow: 0 0 35px rgba(204, 255, 0, 0.35);
+    }
+    .frame-frameless {
+      border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+    }
+
+    /* Wall visualizer backgrounds */
+    .wall-bg-concrete {
+      background-color: #212429;
+      background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .wall-bg-midnight {
+      background-color: #0B0D11;
+      background-image: radial-gradient(rgba(124, 58, 237, 0.15) 1px, transparent 1px);
+      background-size: 28px 28px;
+    }
+    .wall-bg-warm-loft {
+      background-color: #2A2421;
+      background-image: radial-gradient(rgba(255, 180, 120, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+    .wall-bg-cyber-studio {
+      background-color: #070913;
+      background-image: linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    /* Ticker scroll */
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-ticker {
+      display: flex;
+      width: 200%;
+      animation: marquee 22s linear infinite;
+    }
+    .animate-ticker:hover {
+      animation-play-state: paused;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1. Poster Catalog Data with Inline SVG art for guaranteed crispness without external image URLs
+      const POSTERS = [
+        {
+          id: 'p-01',
+          title: 'MIDNIGHT R34 SKYLINE',
+          category: 'Cars & Automotive',
+          categoryKey: 'cars',
+          price: 24,
+          isDrop: true,
+          dropName: 'THE TOKYO CHRONICLES',
+          edition: 'Edition 042 / 100',
+          dropRemaining: 18,
+          bestseller: true,
+          badge: 'NEW DROP',
+          color: '#CCFF00',
+          svgType: 'cars-r34',
+          description: 'A tribute to late-night Daikoku Futo runs. Crisp high-contrast silhouette with Japanese kanji telemetry on 300 GSM satin archival cardstock.'
+        },
+        {
+          id: 'p-02',
+          title: 'NEO EVA SYNAPSE',
+          category: 'Anime',
+          categoryKey: 'anime',
+          price: 22,
+          isDrop: true,
+          dropName: 'CYBER MECHA GENESIS',
+          edition: 'Edition 089 / 120',
+          dropRemaining: 9,
+          bestseller: true,
+          badge: 'LIMITED EDITION',
+          color: '#7C3AED',
+          svgType: 'anime-eva',
+          description: 'Cybernetic unit 01 awakened in electric violet and radioactive green. Kinetic vector typography that punches through any dark dorm room wall.'
+        },
+        {
+          id: 'p-03',
+          title: 'LO-FI MIDNIGHT CASSETTE',
+          category: 'Music',
+          categoryKey: 'music',
+          price: 20,
+          isDrop: false,
+          bestseller: true,
+          badge: 'MADE FOR YOUR ROOM',
+          color: '#FF3366',
+          svgType: 'music-tape',
+          description: 'Analog warmth captured in brutalist geometry. Features frequency waveforms, chrome tape spools, and nostalgic warm dusk gradients.'
+        },
+        {
+          id: 'p-04',
+          title: 'OVERTHINKING SYNDICATE',
+          category: 'Street',
+          categoryKey: 'street',
+          price: 22,
+          isDrop: true,
+          dropName: 'STREET WEAR REJECTS',
+          edition: 'Edition 014 / 80',
+          dropRemaining: 6,
+          bestseller: true,
+          badge: 'HOT',
+          color: '#CCFF00',
+          svgType: 'street-glitch',
+          description: 'The anthem for late-night college brain loops. Deconstructed smiley, barcode labels, and inverted punk street-poster aesthetics.'
+        },
+        {
+          id: 'p-05',
+          title: 'BAUHAUS MONOLITH 1974',
+          category: 'Minimal',
+          categoryKey: 'minimal',
+          price: 19,
+          isDrop: false,
+          bestseller: true,
+          badge: 'TIMELESS',
+          color: '#FF5722',
+          svgType: 'minimal-bauhaus',
+          description: 'Calculated geometric tension. Swiss grid balance, burnt vermillion sphere, and archway architecture for refined study desk setups.'
+        },
+        {
+          id: 'p-06',
+          title: 'MONACO CIRCUIT GLORY',
+          category: 'Cars & Automotive',
+          categoryKey: 'cars',
+          price: 24,
+          isDrop: false,
+          bestseller: false,
+          badge: 'TRENDING',
+          color: '#00E5FF',
+          svgType: 'cars-monaco',
+          description: 'Iconic streets of Monte Carlo rendered in clean racing vector lines with telemetry split-times and classic motorsport livery.'
+        },
+        {
+          id: 'p-07',
+          title: 'VOID HORIZON 404',
+          category: 'Dark Aesthetic',
+          categoryKey: 'dark',
+          price: 21,
+          isDrop: true,
+          dropName: 'DEEP SPACE SIGNALS',
+          edition: 'Edition 005 / 50',
+          dropRemaining: 4,
+          bestseller: false,
+          badge: 'ONLY 4 LEFT',
+          color: '#A855F7',
+          svgType: 'dark-blackhole',
+          description: 'Gravitational lensing visualization, relativistic photon glow, and astronomical coordinates in deep pitch midnight black.'
+        },
+        {
+          id: 'p-08',
+          title: 'PIXEL ARCADE 1999',
+          category: 'Gaming',
+          categoryKey: 'gaming',
+          price: 20,
+          isDrop: false,
+          bestseller: false,
+          badge: 'NOSTALGIA',
+          color: '#10B981',
+          svgType: 'gaming-arcade',
+          description: 'Isometric retro CRT console vector with cyber scanlines and neon joystick controllers. Perfect backdrop for mechanical keyboard battlestations.'
+        },
+        {
+          id: 'p-09',
+          title: 'BRUTALIST TOWER ZURICH',
+          category: 'Architecture',
+          categoryKey: 'architecture',
+          price: 22,
+          isDrop: false,
+          bestseller: false,
+          badge: 'STUDIO PICK',
+          color: '#E2E8F0',
+          svgType: 'arch-brutal',
+          description: 'Raw concrete angled facades with deep monochrome shadows and clean Helvetica-inspired coordinate typography.'
+        },
+        {
+          id: 'p-10',
+          title: 'TOKYO RAIN SYNTH',
+          category: 'Movies & TV',
+          categoryKey: 'movies',
+          price: 23,
+          isDrop: false,
+          bestseller: true,
+          badge: 'VIRAL',
+          color: '#EC4899',
+          svgType: 'synth-rain',
+          description: 'Atmospheric cyberpunk rainy alleyways, neon ramen sign reflections, and dystopian silhouette vibes.'
+        },
+        {
+          id: 'p-11',
+          title: 'DRIBBLE CROSSOVER 96',
+          category: 'Sports',
+          categoryKey: 'sports',
+          price: 20,
+          isDrop: false,
+          bestseller: false,
+          badge: 'CHAMPION',
+          color: '#F97316',
+          svgType: 'sports-hoop',
+          description: 'Vintage 90s basketball motion curves, dynamic slam arcs, and bold athletic varsity numbers.'
+        },
+        {
+          id: 'p-12',
+          title: 'THE DISCIPLINE MANIFESTO',
+          category: 'Motivation',
+          categoryKey: 'motivation',
+          price: 19,
+          isDrop: false,
+          bestseller: true,
+          badge: 'GRINDSET',
+          color: '#CCFF00',
+          svgType: 'motive-type',
+          description: 'Anti-bullshit college desk motivation. High-energy typography designed to replace procrastination with sheer momentum.'
+        }
+      ];
+
+      // SVG Poster Generator function
+      function renderPosterGraphic(type, accentColor = '#CCFF00', isMockup = false) {
+        let content = '';
+        switch(type) {
+          case 'cars-r34':
+            content = `
+              <rect width="100%" height="100%" fill="#0c0d12"/>
+              <circle cx="200" cy="180" r="130" fill="none" stroke="${accentColor}" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.6"/>
+              <path d="M40 280 L160 210 L280 210 L360 280 Z" fill="#141722" stroke="${accentColor}" stroke-width="2"/>
+              <path d="M70 275 L330 275" stroke="#FF3366" stroke-width="4"/>
+              <circle cx="110" cy="275" r="24" fill="#0c0d12" stroke="${accentColor}" stroke-width="3"/>
+              <circle cx="290" cy="275" r="24" fill="#0c0d12" stroke="${accentColor}" stroke-width="3"/>
+              <text x="40" y="80" fill="#ffffff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28" letter-spacing="4">MIDNIGHT</text>
+              <text x="40" y="112" fill="${accentColor}" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="34">R34 GT-R</text>
+              <text x="360" y="80" text-anchor="end" fill="#666" font-size="12" font-family="monospace">湾岸ミッドナイト 03:42AM</text>
+              <text x="40" y="380" fill="#fff" font-size="11" font-family="monospace" letter-spacing="2">TWIN TURBO RB26DETT // ATTESA E-TS PRO</text>
+            `;
+            break;
+          case 'anime-eva':
+            content = `
+              <rect width="100%" height="100%" fill="#120c1e"/>
+              <path d="M0 0 L400 500" stroke="#7C3AED" stroke-width="1" opacity="0.2"/>
+              <polygon points="200,60 340,360 60,360" fill="none" stroke="${accentColor}" stroke-width="3"/>
+              <polygon points="200,120 300,340 100,340" fill="#24133d" opacity="0.7"/>
+              <circle cx="200" cy="240" r="45" fill="#CCFF00"/>
+              <circle cx="200" cy="240" r="25" fill="#120c1e"/>
+              <text x="40" y="70" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="32">UNIT-01</text>
+              <text x="40" y="100" fill="${accentColor}" font-family="monospace" font-size="14" letter-spacing="4">SYNAPSE ACTIVE 100%</text>
+              <text x="40" y="440" fill="#CCFF00" font-size="36" font-weight="900">暴走</text>
+              <text x="360" y="440" text-anchor="end" fill="#aaa" font-size="11" font-family="monospace">NEO TOKYO III // 2015</text>
+            `;
+            break;
+          case 'music-tape':
+            content = `
+              <rect width="100%" height="100%" fill="#160e15"/>
+              <rect x="50" y="110" width="300" height="190" rx="16" fill="#241422" stroke="${accentColor}" stroke-width="2"/>
+              <rect x="80" y="140" width="240" height="90" rx="8" fill="#120a11"/>
+              <circle cx="140" cy="185" r="25" fill="#none" stroke="#fff" stroke-width="3"/>
+              <circle cx="260" cy="185" r="25" fill="#none" stroke="#fff" stroke-width="3"/>
+              <path d="M140 170 L260 170" stroke="#CCFF00" stroke-width="2"/>
+              <text x="50" y="70" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28">LO-FI DREAMS</text>
+              <text x="50" y="94" fill="${accentColor}" font-size="12" font-family="monospace">SIDE A: CHILL BEATS TO STUDY / RELAX</text>
+              <text x="50" y="380" fill="#aaa" font-family="monospace" font-size="11">C-90 HIGH BIAS CASSETTE // STEREO</text>
+              <line x1="50" y1="410" x2="350" y2="410" stroke="#44203e" stroke-width="2"/>
+            `;
+            break;
+          case 'street-glitch':
+            content = `
+              <rect width="100%" height="100%" fill="#0B0C0E"/>
+              <circle cx="200" cy="210" r="110" fill="${accentColor}"/>
+              <circle cx="165" cy="185" r="14" fill="#0B0C0E"/>
+              <circle cx="235" cy="185" r="14" fill="#0B0C0E"/>
+              <path d="M145 250 Q200 300 255 250" stroke="#0B0C0E" stroke-width="12" fill="none" stroke-linecap="round"/>
+              <rect x="30" y="320" width="340" height="32" fill="#000"/>
+              <text x="200" y="342" text-anchor="middle" fill="#CCFF00" font-family="monospace" font-weight="900" font-size="14">/// OVERTHINKING SYNDICATE ///</text>
+              <text x="40" y="80" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="34">DO NOT DIE</text>
+              <text x="40" y="115" fill="#777" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="30">BORING.</text>
+              <text x="40" y="440" fill="#777" font-family="monospace" font-size="10">BARCODE [84920491-DRIP]</text>
+            `;
+            break;
+          case 'minimal-bauhaus':
+            content = `
+              <rect width="100%" height="100%" fill="#E9E5DD"/>
+              <circle cx="200" cy="190" r="95" fill="#D84A38"/>
+              <path d="M100 285 A100 100 0 0 1 300 285 Z" fill="#1B2432"/>
+              <circle cx="200" cy="190" r="45" fill="#F4C430"/>
+              <text x="40" y="70" fill="#1B2432" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28">BAUHAUS</text>
+              <text x="40" y="92" fill="#666" font-family="sans-serif" font-size="12" letter-spacing="4">WEIMAR - DESSAU 1923</text>
+              <text x="40" y="430" fill="#1B2432" font-family="monospace" font-size="11">AUSSTELLUNG // FORM UND FARBE</text>
+            `;
+            break;
+          case 'cars-monaco':
+            content = `
+              <rect width="100%" height="100%" fill="#0E171E"/>
+              <path d="M80 340 C80 200, 180 180, 200 140 C220 100, 310 90, 310 160 C310 240, 240 260, 230 320 Z" fill="none" stroke="${accentColor}" stroke-width="8" stroke-linecap="round"/>
+              <circle cx="80" cy="340" r="8" fill="#FF3366"/>
+              <circle cx="200" cy="140" r="8" fill="#CCFF00"/>
+              <text x="40" y="70" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="32">MONACO</text>
+              <text x="40" y="96" fill="${accentColor}" font-family="monospace" font-size="12" letter-spacing="3">GRAND PRIX DE MONTE CARLO</text>
+              <text x="40" y="430" fill="#6B7280" font-family="monospace" font-size="11">CIRCUIT LENGTH: 3.337 KM // 78 LAPS</text>
+            `;
+            break;
+          case 'dark-blackhole':
+            content = `
+              <rect width="100%" height="100%" fill="#050608"/>
+              <ellipse cx="200" cy="220" rx="140" ry="40" fill="none" stroke="${accentColor}" stroke-width="4" opacity="0.8"/>
+              <ellipse cx="200" cy="220" rx="160" ry="60" fill="none" stroke="#FF3366" stroke-width="1.5" opacity="0.5"/>
+              <circle cx="200" cy="220" r="60" fill="#000000" stroke="#fff" stroke-width="1"/>
+              <text x="40" y="75" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="30">EVENT HORIZON</text>
+              <text x="40" y="100" fill="${accentColor}" font-family="monospace" font-size="11">SINGULARITY COORD: 13h 25m / -43°</text>
+              <text x="40" y="440" fill="#666" font-family="monospace" font-size="10">NO SIGNAL ESCAPES // 0.999c VELOCITY</text>
+            `;
+            break;
+          default:
+            content = `
+              <rect width="100%" height="100%" fill="#13151D"/>
+              <rect x="50" y="100" width="300" height="220" rx="12" fill="#1C1F2B" stroke="${accentColor}" stroke-width="2"/>
+              <circle cx="200" cy="210" r="50" fill="${accentColor}" opacity="0.8"/>
+              <text x="50" y="70" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28">DRIPSTER</text>
+              <text x="50" y="92" fill="${accentColor}" font-family="monospace" font-size="11">PREMIUM DORM PRINT</text>
+              <text x="50" y="420" fill="#888" font-family="monospace" font-size="11">MUSEUM QUALITY // 300 GSM ARCHIVAL</text>
+            `;
+        }
+
+        // Room Mockup frame layer when requested
+        if (isMockup) {
+          return `
+            <div class="relative w-full h-full bg-[#1b1c22] rounded-lg overflow-hidden flex items-center justify-center p-6">
+              <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
+              <!-- Desk Plant & Laptop shadows -->
+              <div class="relative w-[75%] aspect-[1/1.3] shadow-2xl frame-matte-black bg-black transition-transform duration-300 group-hover:scale-105">
+                <svg viewBox="0 0 400 500" class="w-full h-full block">${content}</svg>
+              </div>
+              <div class="absolute bottom-2 right-4 px-2.5 py-1 bg-black/80 backdrop-blur rounded text-[10px] text-zinc-400 font-mono">
+                ROOM VIEW 🛋️
+              </div>
+            </div>
+          `;
+        }
+
+        return `<svg viewBox="0 0 400 500" class="w-full h-full block select-none">${content}</svg>`;
+      }
+
+      // 2. Global State Management
+      const state = {
+        cart: [
+          {
+            posterId: 'p-01',
+            title: 'MIDNIGHT R34 SKYLINE',
+            size: 'A3 (12 × 18 in)',
+            frame: 'Matte Black Aluminum',
+            framePrice: 14,
+            basePrice: 24,
+            qty: 1,
+            svgType: 'cars-r34',
+            accent: '#CCFF00'
+          }
+        ],
+        wishlist: ['p-02'],
+        wallVisualizer: {
+          layout: 'triptych', // solo, duo, triptych, quad
+          wallBg: 'wall-bg-midnight',
+          frameStyle: 'frame-matte-black',
+          slots: ['p-01', 'p-02', 'p-03', 'p-04']
+        },
+        selectedPosterForDetail: POSTERS[0],
+        customPosterDraft: {
+          style: 'synthwave',
+          headline: 'MAIN CHARACTER',
+          subline: 'HOSTEL ROOM CHRONICLES // 03:00 AM',
+          accent: '#CCFF00'
+        }
+      };
+
+      // 3. Navigation Controller (Multi-Page Single-File App)
+      const navLinks = document.querySelectorAll('[data-nav-target]');
+      const pages = document.querySelectorAll('.page-section');
+
+      function switchPage(targetPageId) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        pages.forEach(p => {
+          if (p.id === `page-${targetPageId}`) {
+            p.classList.add('active');
+          } else {
+            p.classList.remove('active');
+          }
+        });
+
+        // Update active nav links
+        navLinks.forEach(link => {
+          if (link.getAttribute('data-nav-target') === targetPageId) {
+            link.classList.add('text-drip-lime', 'font-bold');
+            link.classList.remove('text-zinc-400');
+          } else {
+            link.classList.remove('text-drip-lime', 'font-bold');
+            link.classList.add('text-zinc-400');
+          }
+        });
+      }
+
+      navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = link.getAttribute('data-nav-target');
+          if (target) switchPage(target);
+        });
+      });
+
+      // Quick helper to route dynamically
+      window.navigateTo = (target) => switchPage(target);
+
+      // 4. Cart Drawer Toggle & Logic
+      const cartDrawer = document.getElementById('cart-drawer');
+      const cartBackdrop = document.getElementById('cart-backdrop');
+      const openCartBtn = document.getElementById('open-cart-btn');
+      const closeCartBtn = document.getElementById('close-cart-btn');
+      const cartBadge = document.getElementById('cart-badge');
+
+      function toggleCart(isOpen) {
+        if (isOpen) {
+          cartDrawer.classList.remove('translate-x-full');
+          cartBackdrop.classList.remove('hidden');
+          renderCartList();
+        } else {
+          cartDrawer.classList.add('translate-x-full');
+          cartBackdrop.classList.add('hidden');
+        }
+      }
+
+      openCartBtn?.addEventListener('click', () => toggleCart(true));
+      closeCartBtn?.addEventListener('click', () => toggleCart(false));
+      cartBackdrop?.addEventListener('click', () => toggleCart(false));
+
+      function updateCartBadge() {
+        const totalCount = state.cart.reduce((sum, item) => sum + item.qty, 0);
+        if (cartBadge) {
+          cartBadge.textContent = totalCount;
+          cartBadge.style.display = totalCount > 0 ? 'inline-flex' : 'none';
+        }
+      }
+
+      function renderCartList() {
+        const container = document.getElementById('cart-items-container');
+        const cartSubtotalEl = document.getElementById('cart-subtotal');
+        const cartDiscountEl = document.getElementById('cart-bundle-discount');
+        const cartTotalEl = document.getElementById('cart-total-price');
+
+        if (!container) return;
+
+        if (state.cart.length === 0) {
+          container.innerHTML = `
+            <div class="py-16 text-center space-y-4">
+              <div class="w-16 h-16 mx-auto rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-3xl">🖼️</div>
+              <p class="font-display font-bold text-xl">YOUR CART IS EMPTY</p>
+              <p class="text-zinc-400 text-sm max-w-xs mx-auto">Your walls deserve better than white space. Discover drops or build your set!</p>
+              <button onclick="window.navigateTo('shop'); document.getElementById('close-cart-btn').click();" class="btn btn-sm bg-drip-lime text-black hover:bg-lime-400 font-display font-bold px-6">
+                EXPLORE PRINTS
+              </button>
+            </div>
+          `;
+          if (cartSubtotalEl) cartSubtotalEl.textContent = '$0';
+          if (cartTotalEl) cartTotalEl.textContent = '$0';
+          return;
+        }
+
+        let subtotal = 0;
+        container.innerHTML = state.cart.map((item, index) => {
+          const itemPrice = (item.basePrice + item.framePrice) * item.qty;
+          subtotal += itemPrice;
+          return `
+            <div class="flex gap-4 p-3 bg-zinc-900/90 rounded-xl border border-zinc-800/80 items-center">
+              <div class="w-16 h-20 bg-black rounded overflow-hidden shrink-0 border border-zinc-700">
+                ${renderPosterGraphic(item.svgType, item.accent)}
+              </div>
+              <div class="flex-1 min-w-0">
+                <h4 class="font-display font-bold text-sm truncate text-white">${item.title}</h4>
+                <p class="text-xs text-zinc-400">${item.size} • <span class="text-zinc-300 font-medium">${item.frame}</span></p>
+                <p class="text-xs font-bold text-drip-lime mt-1">$${itemPrice} <span class="text-[10px] text-zinc-500 font-normal">($${item.basePrice + item.framePrice} ea)</span></p>
+                <div class="flex items-center gap-2 mt-2">
+                  <div class="inline-flex items-center bg-zinc-800 rounded border border-zinc-700">
+                    <button class="px-2 py-0.5 text-xs text-zinc-300 hover:text-white" onclick="window.modifyCartItem(${index}, -1)">−</button>
+                    <span class="px-2 text-xs font-mono">${item.qty}</span>
+                    <button class="px-2 py-0.5 text-xs text-zinc-300 hover:text-white" onclick="window.modifyCartItem(${index}, 1)">+</button>
+                  </div>
+                  <button class="text-xs text-zinc-500 hover:text-red-400 ml-auto" onclick="window.removeCartItem(${index})">Remove</button>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // 10% College Dorm Bundle Discount if 2 or more prints
+        const discount = state.cart.length >= 2 ? Math.round(subtotal * 0.10) : 0;
+        const total = subtotal - discount;
+
+        if (cartSubtotalEl) cartSubtotalEl.textContent = `$${subtotal}`;
+        if (cartDiscountEl) cartDiscountEl.textContent = discount > 0 ? `-$${discount} (Dorm Pack -10%)` : '$0';
+        if (cartTotalEl) cartTotalEl.textContent = `$${total}`;
+      }
+
+      window.modifyCartItem = (index, delta) => {
+        state.cart[index].qty += delta;
+        if (state.cart[index].qty <= 0) {
+          state.cart.splice(index, 1);
+        }
+        updateCartBadge();
+        renderCartList();
+      };
+
+      window.removeCartItem = (index) => {
+        state.cart.splice(index, 1);
+        updateCartBadge();
+        renderCartList();
+      };
+
+      window.addToCart = (posterId, size = 'A3 (12 × 18 in)', frame = 'Matte Black Aluminum', frameCost = 14) => {
+        const poster = POSTERS.find(p => p.id === posterId) || POSTERS[0];
+        const existing = state.cart.find(item => item.posterId === poster.id && item.size === size && item.frame === frame);
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          state.cart.push({
+            posterId: poster.id,
+            title: poster.title,
+            size: size,
+            frame: frame,
+            framePrice: frameCost,
+            basePrice: poster.price,
+            qty: 1,
+            svgType: poster.svgType,
+            accent: poster.color
+          });
+        }
+        updateCartBadge();
+        toggleCart(true);
+      };
+
+      // 5. Product Card Renderer
+      function createProductCardHTML(p) {
+        const isFav = state.wishlist.includes(p.id);
+        return `
+          <div class="group relative bg-[#14161D] rounded-2xl border border-zinc-800/80 p-4 transition-all duration-300 hover:border-zinc-600 hover:-translate-y-1.5 flex flex-col justify-between">
+            <div class="relative w-full aspect-[4/5] rounded-xl overflow-hidden bg-black mb-4 flex items-center justify-center cursor-pointer" onclick="window.openProductModal('${p.id}')">
+              <!-- Regular Poster Vector -->
+              <div class="w-full h-full transition-all duration-500 group-hover:scale-105">
+                ${renderPosterGraphic(p.svgType, p.color)}
+              </div>
+
+              <!-- Floating Sticker Badges -->
+              <div class="absolute top-3 left-3 z-10 flex flex-col gap-1 items-start">
+                ${p.badge ? `<span class="sticker-badge bg-black/90 backdrop-blur text-drip-lime text-[11px] font-display font-black px-2.5 py-0.5 rounded border border-drip-lime/40 rotate-[-2deg]">${p.badge}</span>` : ''}
+              </div>
+
+              <!-- Wishlist toggle -->
+              <button onclick="event.stopPropagation(); window.toggleWishlist('${p.id}', this)" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/70 backdrop-blur border border-white/10 flex items-center justify-center text-sm transition-transform active:scale-75 hover:bg-black">
+                <span class="${isFav ? 'text-drip-pink scale-110' : 'text-zinc-400'}">♥</span>
+              </button>
+
+              <!-- Hover Overlay with 'VIEW PRODUCT' -->
+              <div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-xs p-4">
+                <span class="btn btn-sm bg-white text-black font-display font-black rounded-lg text-xs tracking-wider uppercase shadow-xl hover:bg-drip-lime">
+                  VIEW PRODUCT →
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex items-center justify-between text-xs text-zinc-400 mb-1">
+                <span class="font-mono uppercase tracking-wider text-[11px] text-zinc-400">${p.category}</span>
+                <span class="text-[11px] text-zinc-400">A4 • A3 • A2 • A1</span>
+              </div>
+              <h3 class="font-display font-bold text-base text-white tracking-tight truncate group-hover:text-drip-lime transition-colors">
+                ${p.title}
+              </h3>
+
+              <div class="flex items-center justify-between mt-3 pt-3 border-t border-zinc-800/80">
+                <div>
+                  <span class="text-xs text-zinc-400 block leading-none">From</span>
+                  <span class="font-display font-black text-xl text-white">$${p.price}</span>
+                </div>
+                <button onclick="window.addToCart('${p.id}')" class="btn btn-sm bg-zinc-800 hover:bg-drip-lime hover:text-black text-white font-display font-bold border-zinc-700 rounded-lg text-xs px-3">
+                  + QUICK ADD
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      window.toggleWishlist = (id, btn) => {
+        const idx = state.wishlist.indexOf(id);
+        if (idx > -1) {
+          state.wishlist.splice(idx, 1);
+          btn.innerHTML = `<span class="text-zinc-400">♥</span>`;
+        } else {
+          state.wishlist.push(id);
+          btn.innerHTML = `<span class="text-drip-pink scale-110">♥</span>`;
+        }
+      };
+
+      // 6. Populate Grids
+      const trendingContainer = document.getElementById('trending-carousel');
+      if (trendingContainer) {
+        trendingContainer.innerHTML = POSTERS.slice(0, 4).map(createProductCardHTML).join('');
+      }
+
+      const bestsellersContainer = document.getElementById('bestsellers-grid');
+      if (bestsellersContainer) {
+        bestsellersContainer.innerHTML = POSTERS.filter(p => p.bestseller).map(createProductCardHTML).join('');
+      }
+
+      const shopGridContainer = document.getElementById('shop-products-grid');
+      function renderShop(filter = 'all', sort = 'trending') {
+        if (!shopGridContainer) return;
+        let list = [...POSTERS];
+        if (filter !== 'all') {
+          list = list.filter(p => p.categoryKey === filter);
+        }
+        if (sort === 'price-low') {
+          list.sort((a,b) => a.price - b.price);
+        } else if (sort === 'price-high') {
+          list.sort((a,b) => b.price - a.price);
+        }
+        shopGridContainer.innerHTML = list.map(createProductCardHTML).join('');
+        document.getElementById('shop-results-count').textContent = `${list.length} Prints Available`;
+      }
+      renderShop();
+
+      // Filter chips in shop
+      document.querySelectorAll('.shop-filter-pill').forEach(pill => {
+        pill.addEventListener('click', () => {
+          document.querySelectorAll('.shop-filter-pill').forEach(p => p.classList.remove('bg-drip-lime', 'text-black', 'font-bold'));
+          pill.classList.add('bg-drip-lime', 'text-black', 'font-bold');
+          const cat = pill.getAttribute('data-filter');
+          const sortVal = document.getElementById('shop-sort-select').value;
+          renderShop(cat, sortVal);
+        });
+      });
+
+      document.getElementById('shop-sort-select')?.addEventListener('change', (e) => {
+        const activePill = document.querySelector('.shop-filter-pill.bg-drip-lime');
+        const cat = activePill ? activePill.getAttribute('data-filter') : 'all';
+        renderShop(cat, e.target.value);
+      });
+
+      // 7. Product Modal View Logic
+      const productModal = document.getElementById('product-detail-modal');
+      window.openProductModal = (id) => {
+        const p = POSTERS.find(item => item.id === id) || POSTERS[0];
+        state.selectedPosterForDetail = p;
+
+        document.getElementById('modal-title').textContent = p.title;
+        document.getElementById('modal-category').textContent = p.category;
+        document.getElementById('modal-price').textContent = `$${p.price}`;
+        document.getElementById('modal-desc').textContent = p.description;
+        
+        // Artwork preview
+        const artPreview = document.getElementById('modal-artwork-preview');
+        artPreview.innerHTML = renderPosterGraphic(p.svgType, p.color);
+        artPreview.className = "w-full max-w-sm aspect-[4/5] transition-all duration-300 frame-matte-black bg-black";
+
+        productModal.showModal();
+      };
+
+      // Modal size and frame options
+      let modalSelectedSize = 'A3 (12 × 18 in)';
+      let modalSizeMultiplier = 0;
+      let modalFrame = 'Matte Black Aluminum';
+      let modalFrameCost = 14;
+
+      window.setModalSize = (sizeName, addedPrice, btn) => {
+        modalSelectedSize = sizeName;
+        modalSizeMultiplier = addedPrice;
+        document.querySelectorAll('.modal-size-btn').forEach(b => b.classList.remove('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10'));
+        btn.classList.add('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10');
+        updateModalTotal();
+      };
+
+      window.setModalFrame = (frameName, framePrice, frameClass, btn) => {
+        modalFrame = frameName;
+        modalFrameCost = framePrice;
+        document.querySelectorAll('.modal-frame-btn').forEach(b => b.classList.remove('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10'));
+        btn.classList.add('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10');
+        
+        const previewEl = document.getElementById('modal-artwork-preview');
+        previewEl.className = `w-full max-w-sm aspect-[4/5] transition-all duration-300 ${frameClass} bg-black`;
+        updateModalTotal();
+      };
+
+      function updateModalTotal() {
+        const base = state.selectedPosterForDetail.price + modalSizeMultiplier;
+        const total = base + modalFrameCost;
+        document.getElementById('modal-calculated-price').textContent = `$${total}`;
+      }
+
+      document.getElementById('modal-add-to-cart-btn')?.addEventListener('click', () => {
+        window.addToCart(
+          state.selectedPosterForDetail.id,
+          modalSelectedSize,
+          modalFrame,
+          modalFrameCost
+        );
+        productModal.close();
+      });
+
+      // 8. SECTION 5: "BUILD YOUR WALL" Interactive Visualizer
+      function updateWallVisualizer() {
+        const wallContainer = document.getElementById('wall-canvas');
+        if (!wallContainer) return;
+
+        // Apply background
+        wallContainer.className = `relative w-full min-h-[380px] md:min-h-[480px] rounded-2xl flex items-center justify-center p-6 transition-all duration-500 overflow-hidden ${state.wallVisualizer.wallBg}`;
+
+        // Slots depending on layout
+        let slotCount = 3;
+        let layoutClasses = 'flex items-center justify-center gap-6';
+
+        if (state.wallVisualizer.layout === 'solo') {
+          slotCount = 1;
+          layoutClasses = 'flex items-center justify-center';
+        } else if (state.wallVisualizer.layout === 'duo') {
+          slotCount = 2;
+          layoutClasses = 'flex items-center justify-center gap-6';
+        } else if (state.wallVisualizer.layout === 'triptych') {
+          slotCount = 3;
+          layoutClasses = 'flex items-center justify-center gap-4 md:gap-6';
+        } else if (state.wallVisualizer.layout === 'quad') {
+          slotCount = 4;
+          layoutClasses = 'grid grid-cols-2 gap-4';
+        }
+
+        let slotsHTML = '';
+        let postersTotal = 0;
+        let frameTotal = 0;
+
+        for (let i = 0; i < slotCount; i++) {
+          const posterId = state.wallVisualizer.slots[i] || POSTERS[i % POSTERS.length].id;
+          const poster = POSTERS.find(p => p.id === posterId) || POSTERS[0];
+          
+          postersTotal += poster.price;
+          // Frames cost $14 each
+          frameTotal += 14;
+
+          const sizeStyle = state.wallVisualizer.layout === 'solo' 
+            ? 'w-56 md:w-72 aspect-[4/5]' 
+            : state.wallVisualizer.layout === 'quad' 
+              ? 'w-28 md:w-40 aspect-[4/5]' 
+              : 'w-24 md:w-44 aspect-[4/5]';
+
+          slotsHTML += `
+            <div class="group/slot relative ${sizeStyle} ${state.wallVisualizer.frameStyle} bg-black transition-all duration-300 hover:scale-105 cursor-pointer" onclick="window.cycleWallSlot(${i})">
+              ${renderPosterGraphic(poster.svgType, poster.color)}
+              <div class="absolute inset-0 bg-black/50 opacity-0 group-hover/slot:opacity-100 flex items-center justify-center text-[10px] md:text-xs text-white font-mono p-1 text-center">
+                CLICK TO SWAP
+              </div>
+            </div>
+          `;
+        }
+
+        wallContainer.innerHTML = `
+          <!-- Lighting shadow effect -->
+          <div class="absolute top-0 inset-x-0 h-40 bg-gradient-to-b from-black/40 to-transparent pointer-events-none"></div>
+          <!-- Wall furniture floor line -->
+          <div class="absolute bottom-0 inset-x-0 h-10 border-t border-white/10 bg-black/40 backdrop-blur-xs flex items-center justify-between px-6 text-[10px] text-zinc-500 font-mono">
+            <span>DORM SETUP VISUALIZER // MAIN WALL</span>
+            <span>SCALE: 1:12</span>
+          </div>
+          <div class="${layoutClasses}">
+            ${slotsHTML}
+          </div>
+        `;
+
+        // Pricing summary
+        const discount = Math.round((postersTotal + frameTotal) * 0.15); // 15% wall bundle deal
+        const finalPrice = (postersTotal + frameTotal) - discount;
+
+        document.getElementById('wall-poster-total').textContent = `$${postersTotal}`;
+        document.getElementById('wall-frame-total').textContent = `$${frameTotal}`;
+        document.getElementById('wall-discount').textContent = `-$${discount} (15% Set Discount)`;
+        document.getElementById('wall-final-price').textContent = `$${finalPrice}`;
+      }
+
+      window.setWallLayout = (layout, btn) => {
+        state.wallVisualizer.layout = layout;
+        document.querySelectorAll('.wall-layout-btn').forEach(b => b.classList.remove('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10'));
+        btn.classList.add('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10');
+        updateWallVisualizer();
+      };
+
+      window.setWallBg = (bgClass, btn) => {
+        state.wallVisualizer.wallBg = bgClass;
+        document.querySelectorAll('.wall-bg-btn').forEach(b => b.classList.remove('ring-2', 'ring-drip-lime'));
+        btn.classList.add('ring-2', 'ring-drip-lime');
+        updateWallVisualizer();
+      };
+
+      window.setWallFrame = (frameClass, btn) => {
+        state.wallVisualizer.frameStyle = frameClass;
+        document.querySelectorAll('.wall-frame-btn').forEach(b => b.classList.remove('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10'));
+        btn.classList.add('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10');
+        updateWallVisualizer();
+      };
+
+      window.cycleWallSlot = (slotIndex) => {
+        const currentId = state.wallVisualizer.slots[slotIndex];
+        const currentIndex = POSTERS.findIndex(p => p.id === currentId);
+        const nextPoster = POSTERS[(currentIndex + 1) % POSTERS.length];
+        state.wallVisualizer.slots[slotIndex] = nextPoster.id;
+        updateWallVisualizer();
+      };
+
+      // Bundle & add entire wall setup to cart
+      document.getElementById('build-wall-set-btn')?.addEventListener('click', () => {
+        let count = state.wallVisualizer.layout === 'solo' ? 1 : state.wallVisualizer.layout === 'duo' ? 2 : state.wallVisualizer.layout === 'quad' ? 4 : 3;
+        for (let i = 0; i < count; i++) {
+          const posterId = state.wallVisualizer.slots[i] || POSTERS[i].id;
+          const poster = POSTERS.find(p => p.id === posterId) || POSTERS[0];
+          state.cart.push({
+            posterId: poster.id,
+            title: `[WALL SET] ${poster.title}`,
+            size: 'A3 (12 × 18 in)',
+            frame: 'Matched Gallery Frame',
+            framePrice: 12, // discounted frame
+            basePrice: poster.price,
+            qty: 1,
+            svgType: poster.svgType,
+            accent: poster.color
+          });
+        }
+        updateCartBadge();
+        toggleCart(true);
+      });
+
+      // 9. Custom Poster Interactive Creator
+      const customTitleInput = document.getElementById('custom-title-input');
+      const customSublineInput = document.getElementById('custom-subline-input');
+      const customPreviewCanvas = document.getElementById('custom-live-preview');
+
+      function updateCustomPreview() {
+        if (!customPreviewCanvas) return;
+        const title = customTitleInput?.value.trim() || 'MAIN CHARACTER';
+        const sub = customSublineInput?.value.trim() || 'HOSTEL ROOM CHRONICLES';
+        const accent = state.customPosterDraft.accent;
+        const style = state.customPosterDraft.style;
+
+        let svgInterior = '';
+        if (style === 'synthwave') {
+          svgInterior = `
+            <rect width="100%" height="100%" fill="#0C0A14"/>
+            <circle cx="200" cy="180" r="100" fill="url(#sunGrad)"/>
+            <defs>
+              <linearGradient id="sunGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#FF3366"/>
+                <stop offset="100%" stop-color="${accent}"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 240 L400 240 M0 260 L400 260 M0 290 L400 290 M0 330 L400 330 M0 380 L400 380" stroke="#7C3AED" stroke-width="1.5"/>
+            <text x="200" y="320" text-anchor="middle" fill="#FFFFFF" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28" letter-spacing="2">${title}</text>
+            <text x="200" y="348" text-anchor="middle" fill="${accent}" font-family="monospace" font-size="11" letter-spacing="3">${sub}</text>
+          `;
+        } else if (style === 'brutalist') {
+          svgInterior = `
+            <rect width="100%" height="100%" fill="#111215"/>
+            <rect x="30" y="40" width="340" height="420" fill="none" stroke="${accent}" stroke-width="2"/>
+            <text x="50" y="110" fill="#ffffff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="34">${title}</text>
+            <circle cx="320" cy="90" r="24" fill="${accent}"/>
+            <text x="50" y="220" fill="#888" font-family="monospace" font-size="12">ARCHIVAL STUDIO ISSUE</text>
+            <text x="50" y="240" fill="${accent}" font-family="monospace" font-size="14">${sub}</text>
+            <rect x="50" y="360" width="120" height="40" fill="#fff"/>
+            <text x="60" y="386" fill="#000" font-family="monospace" font-weight="900" font-size="16">DRIPSTER</text>
+          `;
+        } else {
+          svgInterior = `
+            <rect width="100%" height="100%" fill="#07090E"/>
+            <circle cx="200" cy="200" r="120" fill="none" stroke="${accent}" stroke-width="3" stroke-dasharray="10 6"/>
+            <polygon points="200,100 280,260 120,260" fill="none" stroke="#fff" stroke-width="2"/>
+            <text x="200" y="340" text-anchor="middle" fill="#FFFFFF" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="26">${title}</text>
+            <text x="200" y="370" text-anchor="middle" fill="${accent}" font-family="monospace" font-size="11">${sub}</text>
+          `;
+        }
+
+        customPreviewCanvas.innerHTML = `<svg viewBox="0 0 400 500" class="w-full h-full block">${svgInterior}</svg>`;
+      }
+
+      customTitleInput?.addEventListener('input', updateCustomPreview);
+      customSublineInput?.addEventListener('input', updateCustomPreview);
+
+      window.setCustomStyle = (styleName, btn) => {
+        state.customPosterDraft.style = styleName;
+        document.querySelectorAll('.custom-style-btn').forEach(b => b.classList.remove('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10'));
+        btn.classList.add('border-drip-lime', 'text-drip-lime', 'bg-drip-lime/10');
+        updateCustomPreview();
+      };
+
+      window.setCustomColor = (colorHex, btn) => {
+        state.customPosterDraft.accent = colorHex;
+        document.querySelectorAll('.custom-color-btn').forEach(b => b.classList.remove('ring-4', 'ring-white'));
+        btn.classList.add('ring-4', 'ring-white');
+        updateCustomPreview();
+      };
+
+      document.getElementById('add-custom-poster-btn')?.addEventListener('click', () => {
+        const title = customTitleInput?.value.trim() || 'CUSTOM ONE-OF-ONE';
+        state.cart.push({
+          posterId: 'custom-' + Date.now(),
+          title: `[CUSTOM] ${title.toUpperCase()}`,
+          size: 'A2 (18 × 24 in)',
+          frame: 'Solid Matte Black',
+          framePrice: 16,
+          basePrice: 32, // custom art premium
+          qty: 1,
+          svgType: 'street-glitch',
+          accent: state.customPosterDraft.accent
+        });
+        updateCartBadge();
+        toggleCart(true);
+      });
+
+      // 10. Countdown Timer for THE DROP
+      function initCountdown() {
+        const hoursEl = document.getElementById('drop-timer-hours');
+        const minsEl = document.getElementById('drop-timer-mins');
+        const secsEl = document.getElementById('drop-timer-secs');
+        if (!hoursEl || !minsEl || !secsEl) return;
+
+        let totalSeconds = 14 * 3600 + 42 * 60 + 19;
+        setInterval(() => {
+          if (totalSeconds > 0) totalSeconds--;
+          const h = Math.floor(totalSeconds / 3600);
+          const m = Math.floor((totalSeconds % 3600) / 60);
+          const s = totalSeconds % 60;
+
+          hoursEl.textContent = String(h).padStart(2, '0');
+          minsEl.textContent = String(m).padStart(2, '0');
+          secsEl.textContent = String(s).padStart(2, '0');
+        }, 1000);
+      }
+      initCountdown();
+
+      // 11. Order Lookup Tool
+      const orderSearchBtn = document.getElementById('track-order-submit');
+      const trackResultCard = document.getElementById('track-result-card');
+      orderSearchBtn?.addEventListener('click', () => {
+        const input = document.getElementById('track-input-id')?.value.trim();
+        if (!input) return;
+        trackResultCard.classList.remove('hidden');
+        document.getElementById('track-display-id').textContent = input.toUpperCase();
+      });
+
+      // 12. Checkout Form Submission
+      document.getElementById('checkout-form')?.addEventListener('submit', (e) => {
+        e.preventDefault();
+        // Clear cart
+        state.cart = [];
+        updateCartBadge();
+        // Navigate to Order Confirmation
+        switchPage('order-confirmation');
+      });
+
+      // Initialize defaults
+      updateWallVisualizer();
+      updateCustomPreview();
+      updateCartBadge();
+    });
+  </script>
+<script defer data-domain="black-cherianne-44.tiiny.site" src="https://analytics.tiiny.net/js/plausible.js"></script></head>
+<body class="bg-[#0B0C0E] text-[#F4F4F6] selection:bg-drip-lime selection:text-black">
+
+  <!-- ================= TOP NAVIGATION ================= -->
+  <header class="sticky top-0 z-40 w-full glass-panel border-b border-zinc-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" data-nav-target="home" class="flex items-center gap-2 group">
+        <div class="w-10 h-10 rounded-xl bg-drip-lime text-black flex items-center justify-center font-display font-black text-2xl tracking-tighter group-hover:rotate-6 transition-transform">
+          D
+        </div>
+        <div class="flex flex-col">
+          <span class="font-display font-black text-2xl tracking-tight text-white leading-none">
+            DRIP<span class="text-drip-lime">STER</span>
+          </span>
+          <span class="text-[9px] font-mono tracking-widest text-zinc-400 mt-1 uppercase">DORM WALL ART</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="hidden lg:flex items-center gap-7 text-sm font-medium">
+        <a href="#" data-nav-target="home" class="text-drip-lime font-bold hover:text-white transition-colors">HOME</a>
+        <a href="#" data-nav-target="shop" class="text-zinc-400 hover:text-drip-lime transition-colors">SHOP ALL</a>
+        <a href="#" data-nav-target="categories" class="text-zinc-400 hover:text-drip-lime transition-colors">VIBES</a>
+        <a href="#" data-nav-target="collections" class="text-zinc-400 hover:text-drip-lime transition-colors">COLLECTIONS</a>
+        <a href="#" data-nav-target="custom-order" class="text-zinc-400 hover:text-drip-lime transition-colors flex items-center gap-1.5">
+          <span>CUSTOM ART</span>
+          <span class="px-1.5 py-0.2 bg-drip-pink/20 text-drip-pink text-[10px] font-mono rounded font-bold">1-of-1</span>
+        </a>
+        <a href="#" data-nav-target="about" class="text-zinc-400 hover:text-drip-lime transition-colors">OUR STORY</a>
+        <a href="#" data-nav-target="faq" class="text-zinc-400 hover:text-drip-lime transition-colors">FAQ</a>
+        <a href="#" data-nav-target="contact" class="text-zinc-400 hover:text-drip-lime transition-colors">CONTACT</a>
+      </nav>
+
+      <!-- Header CTAs: Search / Wishlist / Cart -->
+      <div class="flex items-center gap-3">
+        <!-- Track Order Pill -->
+        <a href="#" data-nav-target="track" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-700/80 text-xs font-mono text-zinc-300 hover:border-drip-lime transition-colors">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>TRACK ORDER</span>
+        </a>
+
+        <!-- Open Cart Button -->
+        <button id="open-cart-btn" class="relative btn btn-sm bg-drip-lime hover:bg-lime-400 text-black font-display font-black px-4 rounded-xl flex items-center gap-2 border-none">
+          <span>BAG</span>
+          <span id="cart-badge" class="badge badge-sm bg-black text-white font-mono font-bold px-1.5">1</span>
+        </button>
+
+        <!-- Mobile Menu Dropdown -->
+        <div class="dropdown dropdown-end lg:hidden">
+          <div tabindex="0" role="button" class="btn btn-ghost btn-sm text-zinc-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" /></svg>
+          </div>
+          <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-50 p-3 shadow-2xl bg-zinc-950 rounded-2xl w-60 border border-zinc-800 space-y-1">
+            <li><a href="#" data-nav-target="home">Home</a></li>
+            <li><a href="#" data-nav-target="shop">Shop All Posters</a></li>
+            <li><a href="#" data-nav-target="categories">Shop by Vibe</a></li>
+            <li><a href="#" data-nav-target="collections">Limited Drops</a></li>
+            <li><a href="#" data-nav-target="custom-order" class="text-drip-pink font-bold">Custom 1-of-1 Art</a></li>
+            <li><a href="#" data-nav-target="track">Track Your Order</a></li>
+            <li><a href="#" data-nav-target="about">About Brand</a></li>
+            <li><a href="#" data-nav-target="faq">FAQs</a></li>
+            <li><a href="#" data-nav-target="contact">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= LIVE TICKER BANNER ================= -->
+  <div class="bg-drip-lime text-black overflow-hidden font-display font-black text-xs tracking-wider py-2 select-none border-y border-black">
+    <div class="animate-ticker flex items-center space-x-8 uppercase">
+      <span>★ ARCHIVAL 300 GSM COTTON RAG</span>
+      <span>•</span>
+      <span>FREE DORMS & CAMPUS DELIVERY OVER $45</span>
+      <span>•</span>
+      <span>MATTE BLACK & RAW OAK FRAMES AVAILABLE</span>
+      <span>•</span>
+      <span>DAMAGE-FREE HANGING STRIPS INCLUDED</span>
+      <span>•</span>
+      <span>LIMITED EDITION DROPS NEVER RESTOCKED</span>
+      <span>•</span>
+      <span>CUSTOM 1-OF-1 PRINTS SHIPPED IN 48H</span>
+      <span>★ ARCHIVAL 300 GSM COTTON RAG</span>
+      <span>•</span>
+      <span>FREE DORMS & CAMPUS DELIVERY OVER $45</span>
+      <span>•</span>
+      <span>MATTE BLACK & RAW OAK FRAMES AVAILABLE</span>
+    </div>
+  </div>
+
+
+  <!-- #######################################################
+       PAGE 1: HOME PAGE
+       ####################################################### -->
+  <main id="page-home" class="page-section active">
+
+    <!-- SECTION 1: HERO -->
+    <section class="relative min-h-[90vh] flex items-center justify-center pt-8 pb-20 px-4 overflow-hidden">
+      <!-- Glow ambient lights -->
+      <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-drip-purple/15 rounded-full blur-[140px] pointer-events-none"></div>
+      <div class="absolute top-1/3 left-1/4 w-[350px] h-[350px] bg-drip-lime/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+        
+        <!-- Left Hero Copy -->
+        <div class="lg:col-span-7 space-y-8 z-10 text-center lg:text-left">
+          
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900 border border-zinc-700/80">
+            <span class="w-2 h-2 rounded-full bg-drip-lime"></span>
+            <span class="text-xs font-mono font-bold tracking-widest text-zinc-300">CAMPUS DROP 04 / LIVE</span>
+          </div>
+
+          <h1 class="font-display font-black text-5xl sm:text-7xl xl:text-8xl tracking-tight leading-[0.92] text-white uppercase">
+            YOUR WALL.<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-drip-lime via-white to-drip-cyan">
+              YOUR VIBE.
+            </span>
+          </h1>
+
+          <p class="text-zinc-400 text-lg sm:text-xl max-w-xl font-normal leading-relaxed mx-auto lg:mx-0">
+            Turn empty walls into something worth staring at. Museum-grade archival prints curated for hostel rooms, desks, and gaming setups.
+          </p>
+
+          <div class="flex flex-wrap items-center justify-center lg:justify-start gap-4 pt-2">
+            <button onclick="window.navigateTo('shop')" class="btn btn-lg bg-drip-lime hover:bg-lime-400 text-black font-display font-black px-8 rounded-xl border-none glow-lime shadow-xl">
+              SHOP POSTERS
+            </button>
+            <button onclick="window.navigateTo('custom-order')" class="btn btn-lg bg-zinc-900 hover:bg-zinc-800 text-white font-display font-bold px-7 rounded-xl border border-zinc-700">
+              CREATE CUSTOM ART →
+            </button>
+          </div>
+
+          <!-- Trust Badges -->
+          <div class="pt-6 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs text-zinc-400 font-mono">
+            <div class="flex items-center gap-2">
+              <span class="text-drip-lime">✓</span> 300 GSM Heavy Paper
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-drip-lime">✓</span> Command Strip Safe
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-drip-lime">✓</span> Made for Students
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Hero Visual Collage -->
+        <div class="lg:col-span-5 relative flex items-center justify-center min-h-[440px] sm:min-h-[520px]">
+          
+          <!-- Floating Badge 1 -->
+          <div class="absolute -top-4 left-4 z-20 sticker-badge bg-drip-lime text-black text-xs font-display font-black px-3.5 py-1.5 rounded-lg border-2 border-black rotate-[-6deg]">
+            NEW DROP 🔥
+          </div>
+
+          <!-- Floating Badge 2 -->
+          <div class="absolute bottom-6 -left-6 z-20 sticker-badge bg-drip-pink text-white text-xs font-display font-black px-3.5 py-1.5 rounded-lg border-2 border-black rotate-[4deg]">
+            LIMITED EDITION 042/100
+          </div>
+
+          <!-- Floating Badge 3 -->
+          <div class="absolute -bottom-2 right-4 z-20 sticker-badge bg-black/90 backdrop-blur text-zinc-200 text-xs font-mono px-3.5 py-1.5 rounded-lg border border-zinc-700 rotate-[-3deg]">
+            MADE FOR YOUR ROOM 🛏️
+          </div>
+
+          <!-- Main Center Hero Poster (Framed) -->
+          <div class="relative w-64 sm:w-72 aspect-[4/5] frame-matte-black bg-black rounded-lg z-10 shadow-2xl transition-transform hover:scale-105 duration-300">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#0c0d12"/>
+              <circle cx="200" cy="180" r="130" fill="none" stroke="#CCFF00" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.6"/>
+              <path d="M40 280 L160 210 L280 210 L360 280 Z" fill="#141722" stroke="#CCFF00" stroke-width="2"/>
+              <path d="M70 275 L330 275" stroke="#FF3366" stroke-width="4"/>
+              <circle cx="110" cy="275" r="24" fill="#0c0d12" stroke="#CCFF00" stroke-width="3"/>
+              <circle cx="290" cy="275" r="24" fill="#0c0d12" stroke="#CCFF00" stroke-width="3"/>
+              <text x="40" y="80" fill="#ffffff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28" letter-spacing="4">MIDNIGHT</text>
+              <text x="40" y="112" fill="#CCFF00" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="34">R34 GT-R</text>
+              <text x="360" y="80" text-anchor="end" fill="#666" font-size="12" font-family="monospace">湾岸ミッドナイト 03:42AM</text>
+              <text x="40" y="380" fill="#fff" font-size="11" font-family="monospace" letter-spacing="2">TWIN TURBO RB26DETT // ATTESA</text>
+            </svg>
+          </div>
+
+          <!-- Behind Angled Poster Left -->
+          <div class="absolute -left-4 sm:left-2 top-8 w-52 sm:w-60 aspect-[4/5] frame-raw-oak bg-black rounded-lg opacity-80 rotate-[-12deg] transition-all hover:rotate-[-6deg] hover:opacity-100 duration-300">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#120c1e"/>
+              <polygon points="200,60 340,360 60,360" fill="none" stroke="#7C3AED" stroke-width="3"/>
+              <circle cx="200" cy="240" r="40" fill="#CCFF00"/>
+              <text x="40" y="70" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="32">UNIT-01</text>
+              <text x="40" y="100" fill="#7C3AED" font-family="monospace" font-size="14">SYNAPSE ACTIVE</text>
+            </svg>
+          </div>
+
+          <!-- Behind Angled Poster Right -->
+          <div class="absolute -right-4 sm:right-2 bottom-8 w-48 sm:w-56 aspect-[4/5] frame-neon-volt bg-black rounded-lg opacity-70 rotate-[14deg] transition-all hover:rotate-[6deg] hover:opacity-100 duration-300">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#0B0C0E"/>
+              <circle cx="200" cy="210" r="100" fill="#CCFF00"/>
+              <circle cx="165" cy="185" r="14" fill="#0B0C0E"/>
+              <circle cx="235" cy="185" r="14" fill="#0B0C0E"/>
+              <path d="M145 250 Q200 300 255 250" stroke="#0B0C0E" stroke-width="12" fill="none" stroke-linecap="round"/>
+              <text x="40" y="80" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="34">DO NOT DIE</text>
+            </svg>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 2: SHOP BY VIBE -->
+    <section class="py-20 px-4 max-w-7xl mx-auto border-t border-zinc-900">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+        <div>
+          <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">DISCOVERY MATRIX</span>
+          <h2 class="font-display font-black text-4xl sm:text-5xl text-white uppercase mt-1">WHAT'S YOUR VIBE?</h2>
+        </div>
+        <p class="text-zinc-400 text-sm max-w-md">Pick the frequency that matches your headspace. Every aesthetic carefully designed, no generic clip-art.</p>
+      </div>
+
+      <!-- 12 Vibe Cards Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        
+        <!-- Card 1: Cars -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-drip-lime hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#0a0f18"/>
+              <path d="M20 280 L180 200 L380 280 Z" fill="#141f33" stroke="#00E5FF" stroke-width="2"/>
+              <circle cx="110" cy="280" r="30" fill="#00E5FF" opacity="0.8"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">01 // AUTOMOTIVE</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-drip-lime transition-colors">Cars & Automotive</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Anime -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-drip-purple hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#13081e"/>
+              <polygon points="200,80 340,360 60,360" fill="none" stroke="#7C3AED" stroke-width="4"/>
+              <circle cx="200" cy="240" r="50" fill="#CCFF00" opacity="0.6"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">02 // CYBER ANIME</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-drip-purple transition-colors">Anime</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Music -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-drip-pink hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#180c14"/>
+              <circle cx="200" cy="230" r="90" fill="none" stroke="#FF3366" stroke-width="12"/>
+              <circle cx="200" cy="230" r="40" fill="#FF3366"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">03 // SOUNDWAVE</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-drip-pink transition-colors">Music</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Movies & TV -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-drip-lime hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#0c1116"/>
+              <rect x="50" y="100" width="300" height="240" fill="none" stroke="#CCFF00" stroke-width="2"/>
+              <line x1="50" y1="220" x2="350" y2="220" stroke="#CCFF00" stroke-width="4"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">04 // CINEMA</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-drip-lime transition-colors">Movies & TV</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 5: Sports -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-orange-500 hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#1a100a"/>
+              <circle cx="200" cy="220" r="90" fill="none" stroke="#F97316" stroke-width="6"/>
+              <line x1="110" y1="220" x2="290" y2="220" stroke="#F97316" stroke-width="4"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">05 // ATHLETIC</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-orange-400 transition-colors">Sports</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 6: Gaming -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-emerald-400 hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#0a1610"/>
+              <rect x="100" y="160" width="200" height="120" rx="20" fill="#10B981" opacity="0.4"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">06 // ARCADE</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-emerald-400 transition-colors">Gaming</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 7: Minimal -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-zinc-300 hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#202228"/>
+              <circle cx="200" cy="220" r="70" fill="#E2E8F0" opacity="0.8"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">07 // MONOCHROME</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-zinc-200 transition-colors">Minimal</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 8: Street -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-drip-lime hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#0a0a0d"/>
+              <circle cx="200" cy="220" r="90" fill="#CCFF00"/>
+              <path d="M140 260 Q200 310 260 260" stroke="#000" stroke-width="14" fill="none"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">08 // ACID STREET</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-drip-lime transition-colors">Street</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 9: Motivation -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-yellow-400 hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#14140a"/>
+              <text x="200" y="240" text-anchor="middle" fill="#EAB308" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="60">GRIND</text>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">09 // FOCUS</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-yellow-400 transition-colors">Motivation</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 10: Architecture -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-sky-400 hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#0a1218"/>
+              <polygon points="100,380 200,120 300,380" fill="none" stroke="#38BDF8" stroke-width="4"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">10 // CONCRETE</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-sky-400 transition-colors">Architecture</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 11: Art -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-red-400 hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#1a0c0c"/>
+              <circle cx="200" cy="180" r="80" fill="#EF4444" opacity="0.6"/>
+              <rect x="120" y="240" width="160" height="100" fill="#F59E0B" opacity="0.7"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">11 // EDITORIAL</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-red-400 transition-colors">Art</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+        <!-- Card 12: Dark Aesthetic -->
+        <div onclick="window.navigateTo('shop')" class="group relative aspect-[4/5] rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 p-5 flex flex-col justify-between cursor-pointer transition-all duration-300 hover:border-purple-500 hover:shadow-2xl">
+          <div class="absolute inset-0 opacity-40 group-hover:opacity-70 group-hover:scale-105 transition-all duration-500">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#050608"/>
+              <ellipse cx="200" cy="220" rx="140" ry="35" fill="none" stroke="#A855F7" stroke-width="4"/>
+              <circle cx="200" cy="220" r="50" fill="#000"/>
+            </svg>
+          </div>
+          <span class="relative z-10 text-[10px] font-mono text-zinc-400 tracking-wider">12 // VOID</span>
+          <div class="relative z-10">
+            <h3 class="font-display font-black text-xl text-white group-hover:text-purple-400 transition-colors">Dark Aesthetic</h3>
+            <span class="text-xs text-zinc-400 font-mono flex items-center gap-1 mt-1 group-hover:text-white">EXPLORE →</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 3: TRENDING NOW -->
+    <section class="py-20 px-4 max-w-7xl mx-auto border-t border-zinc-900">
+      <div class="flex items-center justify-between mb-10">
+        <div>
+          <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">VIRAL IN RESIDENCE HALLS</span>
+          <h2 class="font-display font-black text-4xl sm:text-5xl text-white uppercase mt-1">TRENDING NOW</h2>
+        </div>
+        <button onclick="window.navigateTo('shop')" class="btn btn-sm bg-zinc-900 text-zinc-300 hover:text-white border-zinc-800 rounded-xl font-mono text-xs">
+          VIEW ALL (12) →
+        </button>
+      </div>
+
+      <!-- Carousel / Grid populated by JS -->
+      <div id="trending-carousel" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    </section>
+
+    <!-- SECTION 4: THE DROP (DRAMATIC LIMITED SECTION) -->
+    <section class="py-24 px-4 bg-black relative border-y border-zinc-800 overflow-hidden">
+      <!-- Cyber background grid lines -->
+      <div class="absolute inset-0 bg-[linear-gradient(to_right,#161922_1px,transparent_1px),linear-gradient(to_bottom,#161922_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30 pointer-events-none"></div>
+
+      <div class="max-w-7xl mx-auto relative z-10">
+        
+        <!-- Section Header + Live Countdown -->
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
+          <div class="space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 bg-red-500/10 border border-red-500/30 text-red-400 rounded text-xs font-mono font-bold">
+              <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+              <span>STRICTLY LIMITED VAULT DROP</span>
+            </div>
+            <h2 class="font-display font-black text-5xl sm:text-6xl text-white tracking-tight uppercase">
+              THE <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 via-drip-pink to-drip-lime">DROP</span>
+            </h2>
+            <p class="text-zinc-400 text-base max-w-lg">
+              Limited pieces. Individually numbered certificates. When they're gone, they're gone forever.
+            </p>
+          </div>
+
+          <!-- Ticking Countdown Card -->
+          <div class="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-4 flex items-center gap-4 sm:gap-6 shadow-2xl shrink-0">
+            <div class="text-center">
+              <span id="drop-timer-hours" class="font-display font-black text-3xl sm:text-4xl text-white block">14</span>
+              <span class="text-[10px] font-mono text-zinc-500 uppercase">HOURS</span>
+            </div>
+            <span class="text-zinc-600 font-display font-bold text-2xl">:</span>
+            <div class="text-center">
+              <span id="drop-timer-mins" class="font-display font-black text-3xl sm:text-4xl text-drip-lime block">42</span>
+              <span class="text-[10px] font-mono text-zinc-500 uppercase">MINS</span>
+            </div>
+            <span class="text-zinc-600 font-display font-bold text-2xl">:</span>
+            <div class="text-center">
+              <span id="drop-timer-secs" class="font-display font-black text-3xl sm:text-4xl text-drip-pink block">19</span>
+              <span class="text-[10px] font-mono text-zinc-500 uppercase">SECS</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 Limited Edition Posters Showcase -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          
+          <!-- Drop Item 1 -->
+          <div class="bg-zinc-950 rounded-2xl border border-zinc-800 p-4 space-y-4 flex flex-col justify-between">
+            <div class="relative aspect-[4/5] bg-black rounded-xl overflow-hidden frame-neon-volt cursor-pointer" onclick="window.openProductModal('p-01')">
+              <svg viewBox="0 0 400 500" class="w-full h-full block">
+                <rect width="100%" height="100%" fill="#0c0d12"/>
+                <circle cx="200" cy="180" r="130" fill="none" stroke="#CCFF00" stroke-width="1.5" stroke-dasharray="4 6" opacity="0.6"/>
+                <path d="M40 280 L160 210 L280 210 L360 280 Z" fill="#141722" stroke="#CCFF00" stroke-width="2"/>
+                <circle cx="110" cy="275" r="24" fill="#0c0d12" stroke="#CCFF00" stroke-width="3"/>
+                <circle cx="290" cy="275" r="24" fill="#0c0d12" stroke="#CCFF00" stroke-width="3"/>
+                <text x="40" y="80" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28">MIDNIGHT</text>
+                <text x="40" y="112" fill="#CCFF00" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="34">R34 GT-R</text>
+              </svg>
+              <div class="absolute top-2 left-2 px-2 py-0.5 bg-black text-drip-lime text-[10px] font-mono font-bold rounded">
+                EDITION 042 / 100
+              </div>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-lg text-white">THE TOKYO CHRONICLES</h3>
+              <p class="text-xs text-zinc-400 mt-1">Daikoku Futo Midnight Run tribute.</p>
+              <!-- Remaining Quantity Bar -->
+              <div class="mt-3">
+                <div class="flex justify-between text-[11px] font-mono text-zinc-400 mb-1">
+                  <span>Remaining</span>
+                  <span class="text-drip-lime font-bold">18 / 100</span>
+                </div>
+                <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-drip-lime rounded-full" style="width: 18%"></div>
+                </div>
+              </div>
+            </div>
+            <button onclick="window.addToCart('p-01')" class="btn btn-sm bg-white text-black hover:bg-drip-lime font-display font-bold w-full rounded-xl">
+              CLAIM DROP ($24)
+            </button>
+          </div>
+
+          <!-- Drop Item 2 -->
+          <div class="bg-zinc-950 rounded-2xl border border-zinc-800 p-4 space-y-4 flex flex-col justify-between">
+            <div class="relative aspect-[4/5] bg-black rounded-xl overflow-hidden frame-matte-black cursor-pointer" onclick="window.openProductModal('p-02')">
+              <svg viewBox="0 0 400 500" class="w-full h-full block">
+                <rect width="100%" height="100%" fill="#120c1e"/>
+                <polygon points="200,60 340,360 60,360" fill="none" stroke="#7C3AED" stroke-width="3"/>
+                <circle cx="200" cy="240" r="45" fill="#CCFF00"/>
+                <text x="40" y="70" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="32">UNIT-01</text>
+                <text x="40" y="100" fill="#7C3AED" font-family="monospace" font-size="14">SYNAPSE ACTIVE</text>
+              </svg>
+              <div class="absolute top-2 left-2 px-2 py-0.5 bg-black text-drip-purple text-[10px] font-mono font-bold rounded">
+                EDITION 089 / 120
+              </div>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-lg text-white">CYBER MECHA GENESIS</h3>
+              <p class="text-xs text-zinc-400 mt-1">High-voltage bio-mechanical kinetic print.</p>
+              <div class="mt-3">
+                <div class="flex justify-between text-[11px] font-mono text-zinc-400 mb-1">
+                  <span>Remaining</span>
+                  <span class="text-drip-purple font-bold">9 / 120</span>
+                </div>
+                <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-drip-purple rounded-full" style="width: 8%"></div>
+                </div>
+              </div>
+            </div>
+            <button onclick="window.addToCart('p-02')" class="btn btn-sm bg-white text-black hover:bg-drip-purple hover:text-white font-display font-bold w-full rounded-xl">
+              CLAIM DROP ($22)
+            </button>
+          </div>
+
+          <!-- Drop Item 3 -->
+          <div class="bg-zinc-950 rounded-2xl border border-zinc-800 p-4 space-y-4 flex flex-col justify-between">
+            <div class="relative aspect-[4/5] bg-black rounded-xl overflow-hidden frame-matte-black cursor-pointer" onclick="window.openProductModal('p-04')">
+              <svg viewBox="0 0 400 500" class="w-full h-full block">
+                <rect width="100%" height="100%" fill="#0B0C0E"/>
+                <circle cx="200" cy="210" r="100" fill="#CCFF00"/>
+                <circle cx="165" cy="185" r="14" fill="#0B0C0E"/>
+                <circle cx="235" cy="185" r="14" fill="#0B0C0E"/>
+                <path d="M145 250 Q200 300 255 250" stroke="#0B0C0E" stroke-width="12" fill="none" stroke-linecap="round"/>
+                <text x="40" y="80" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="34">DO NOT DIE</text>
+              </svg>
+              <div class="absolute top-2 left-2 px-2 py-0.5 bg-black text-drip-pink text-[10px] font-mono font-bold rounded">
+                EDITION 014 / 80
+              </div>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-lg text-white">OVERTHINKING SYNDICATE</h3>
+              <p class="text-xs text-zinc-400 mt-1">Brutalist anti-apathy college motto.</p>
+              <div class="mt-3">
+                <div class="flex justify-between text-[11px] font-mono text-zinc-400 mb-1">
+                  <span>Remaining</span>
+                  <span class="text-red-400 font-bold">6 / 80</span>
+                </div>
+                <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-red-500 rounded-full" style="width: 7%"></div>
+                </div>
+              </div>
+            </div>
+            <button onclick="window.addToCart('p-04')" class="btn btn-sm bg-white text-black hover:bg-drip-pink hover:text-white font-display font-bold w-full rounded-xl">
+              CLAIM DROP ($22)
+            </button>
+          </div>
+
+          <!-- Drop Item 4 -->
+          <div class="bg-zinc-950 rounded-2xl border border-zinc-800 p-4 space-y-4 flex flex-col justify-between">
+            <div class="relative aspect-[4/5] bg-black rounded-xl overflow-hidden frame-matte-black cursor-pointer" onclick="window.openProductModal('p-07')">
+              <svg viewBox="0 0 400 500" class="w-full h-full block">
+                <rect width="100%" height="100%" fill="#050608"/>
+                <ellipse cx="200" cy="220" rx="140" ry="40" fill="none" stroke="#A855F7" stroke-width="4" opacity="0.8"/>
+                <circle cx="200" cy="220" r="60" fill="#000000" stroke="#fff" stroke-width="1"/>
+                <text x="40" y="75" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="30">EVENT HORIZON</text>
+              </svg>
+              <div class="absolute top-2 left-2 px-2 py-0.5 bg-black text-amber-400 text-[10px] font-mono font-bold rounded">
+                EDITION 005 / 50
+              </div>
+            </div>
+            <div>
+              <h3 class="font-display font-bold text-lg text-white">DEEP SPACE SIGNALS</h3>
+              <p class="text-xs text-zinc-400 mt-1">Astrophysics gravitational lensing.</p>
+              <div class="mt-3">
+                <div class="flex justify-between text-[11px] font-mono text-zinc-400 mb-1">
+                  <span>Remaining</span>
+                  <span class="text-amber-400 font-bold">4 / 50</span>
+                </div>
+                <div class="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div class="h-full bg-amber-500 rounded-full" style="width: 8%"></div>
+                </div>
+              </div>
+            </div>
+            <button onclick="window.addToCart('p-07')" class="btn btn-sm bg-white text-black hover:bg-amber-400 font-display font-bold w-full rounded-xl">
+              CLAIM DROP ($21)
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 5: BUILD YOUR WALL (INTERACTIVE ROOM VISUALIZER) -->
+    <section class="py-24 px-4 max-w-7xl mx-auto border-t border-zinc-900">
+      <div class="text-center max-w-2xl mx-auto mb-12">
+        <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">THE DORM ROOM LAB</span>
+        <h2 class="font-display font-black text-4xl sm:text-5xl text-white uppercase mt-1">BUILD YOUR WALL</h2>
+        <p class="text-zinc-400 text-sm mt-3">
+          Simulate your room setup before buying. Pick posters, tweak frame finishes, change wall paint, and unlock our 15% automatic Bundle Discount.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Controls Column (Left) -->
+        <div class="lg:col-span-4 bg-[#14161D] rounded-2xl border border-zinc-800 p-6 space-y-6">
+          
+          <!-- 1. Layout Arrangement -->
+          <div>
+            <label class="text-xs font-mono font-bold text-zinc-300 uppercase block mb-2.5">1. Wall Arrangement</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="window.setWallLayout('solo', this)" class="wall-layout-btn py-2 px-3 text-xs font-display font-bold rounded-xl border border-zinc-700 bg-zinc-900 hover:border-zinc-500">
+                Solo Statement (1)
+              </button>
+              <button onclick="window.setWallLayout('duo', this)" class="wall-layout-btn py-2 px-3 text-xs font-display font-bold rounded-xl border border-zinc-700 bg-zinc-900 hover:border-zinc-500">
+                Duo Twin (2)
+              </button>
+              <button onclick="window.setWallLayout('triptych', this)" class="wall-layout-btn py-2 px-3 text-xs font-display font-bold rounded-xl border-drip-lime text-drip-lime bg-drip-lime/10">
+                Classic Triptych (3)
+              </button>
+              <button onclick="window.setWallLayout('quad', this)" class="wall-layout-btn py-2 px-3 text-xs font-display font-bold rounded-xl border border-zinc-700 bg-zinc-900 hover:border-zinc-500">
+                Dorm Quad (2×2)
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Frame Finish -->
+          <div>
+            <label class="text-xs font-mono font-bold text-zinc-300 uppercase block mb-2.5">2. Frame Finish</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="window.setWallFrame('frame-matte-black', this)" class="wall-frame-btn py-2 px-3 text-xs font-medium rounded-xl border-drip-lime text-drip-lime bg-drip-lime/10">
+                Matte Black
+              </button>
+              <button onclick="window.setWallFrame('frame-raw-oak', this)" class="wall-frame-btn py-2 px-3 text-xs font-medium rounded-xl border border-zinc-700 bg-zinc-900 hover:border-zinc-500">
+                Natural Oak
+              </button>
+              <button onclick="window.setWallFrame('frame-neon-volt', this)" class="wall-frame-btn py-2 px-3 text-xs font-medium rounded-xl border border-zinc-700 bg-zinc-900 hover:border-zinc-500">
+                Neon Volt
+              </button>
+              <button onclick="window.setWallFrame('frame-frameless', this)" class="wall-frame-btn py-2 px-3 text-xs font-medium rounded-xl border border-zinc-700 bg-zinc-900 hover:border-zinc-500">
+                Frameless Print
+              </button>
+            </div>
+          </div>
+
+          <!-- 3. Wall Background Color -->
+          <div>
+            <label class="text-xs font-mono font-bold text-zinc-300 uppercase block mb-2.5">3. Room Wall Mood</label>
+            <div class="flex items-center gap-3">
+              <button title="Midnight Dark" onclick="window.setWallBg('wall-bg-midnight', this)" class="wall-bg-btn w-9 h-9 rounded-full bg-[#0B0D11] border border-zinc-700 ring-2 ring-drip-lime"></button>
+              <button title="Concrete Dorm Gray" onclick="window.setWallBg('wall-bg-concrete', this)" class="wall-bg-btn w-9 h-9 rounded-full bg-[#212429] border border-zinc-700"></button>
+              <button title="Cyber Studio" onclick="window.setWallBg('wall-bg-cyber-studio', this)" class="wall-bg-btn w-9 h-9 rounded-full bg-[#070913] border border-zinc-700"></button>
+              <button title="Warm Loft" onclick="window.setWallBg('wall-bg-warm-loft', this)" class="wall-bg-btn w-9 h-9 rounded-full bg-[#2A2421] border border-zinc-700"></button>
+            </div>
+          </div>
+
+          <!-- Wall Price Breakdown Card -->
+          <div class="pt-4 border-t border-zinc-800 space-y-2">
+            <h4 class="font-display font-black text-sm uppercase text-white">YOUR WALL SETUP</h4>
+            
+            <div class="flex justify-between text-xs text-zinc-400">
+              <span>Posters Total</span>
+              <span id="wall-poster-total" class="font-mono text-white">$66</span>
+            </div>
+            <div class="flex justify-between text-xs text-zinc-400">
+              <span>Frame Pack Total</span>
+              <span id="wall-frame-total" class="font-mono text-white">$42</span>
+            </div>
+            <div class="flex justify-between text-xs text-drip-lime font-medium">
+              <span>Set Discount (15%)</span>
+              <span id="wall-discount" class="font-mono">-$16</span>
+            </div>
+            <div class="flex justify-between text-sm font-display font-black text-white pt-2 border-t border-zinc-800">
+              <span>Final Bundle Price</span>
+              <span id="wall-final-price" class="text-drip-lime text-lg font-mono">$92</span>
+            </div>
+
+            <button id="build-wall-set-btn" class="btn btn-block bg-drip-lime hover:bg-lime-400 text-black font-display font-black text-sm rounded-xl mt-3 glow-lime">
+              BUILD THIS SET →
+            </button>
+            <p class="text-[11px] font-mono text-zinc-400 text-center">Includes free command damage-free strips & dorm shipping</p>
+          </div>
+
+        </div>
+
+        <!-- Interactive Visual Wall Canvas (Right) -->
+        <div class="lg:col-span-8">
+          <div id="wall-canvas" class="relative w-full min-h-[460px] rounded-2xl flex items-center justify-center p-6 wall-bg-midnight">
+            <!-- Rendered dynamically by updateWallVisualizer() -->
+          </div>
+          <p class="text-xs text-zinc-400 font-mono mt-3 text-center">
+            💡 TIP: Click on any poster directly on the wall to swap it with another print from our catalog.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SECTION 6: BESTSELLERS -->
+    <section class="py-20 px-4 max-w-7xl mx-auto border-t border-zinc-900">
+      <div class="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div>
+          <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">HALL OF FAME</span>
+          <h2 class="font-display font-black text-4xl sm:text-5xl text-white uppercase mt-1">PEOPLE KEEP BUYING THESE</h2>
+        </div>
+        <p class="text-zinc-400 text-sm max-w-sm">Every print produced on ultra-dense 300 GSM archival rag with archival pigment inks that never fade.</p>
+      </div>
+
+      <!-- Bestsellers Grid populated by JS -->
+      <div id="bestsellers-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    </section>
+
+    <!-- SECTION 7: CUSTOM ART BANNER -->
+    <section class="py-20 px-4 max-w-7xl mx-auto">
+      <div class="relative bg-gradient-to-br from-zinc-950 via-zinc-900 to-black rounded-3xl border border-zinc-800 p-8 sm:p-14 overflow-hidden shadow-2xl">
+        <!-- Accent Glow -->
+        <div class="absolute -right-20 -bottom-20 w-96 h-96 bg-drip-pink/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="relative z-10 max-w-3xl space-y-6">
+          <span class="px-3 py-1 rounded-full bg-drip-pink/20 border border-drip-pink/40 text-drip-pink font-mono text-xs font-bold uppercase">
+            1-OF-1 BESPOKE PRINTS
+          </span>
+          <h2 class="font-display font-black text-4xl sm:text-6xl text-white leading-tight uppercase">
+            CAN'T FIND YOUR WALL'S<br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-drip-pink via-drip-purple to-drip-lime">
+              MAIN CHARACTER?
+            </span>
+          </h2>
+          <p class="text-zinc-300 text-base sm:text-lg">
+            Send us your idea. We'll turn it into museum-grade wall art. Got an inside joke, a personal Spotify track, your project car, or a gaming gamertag? We design and print it.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+            <div class="p-4 bg-zinc-900/80 rounded-xl border border-zinc-800">
+              <span class="font-mono text-drip-lime font-bold text-sm block mb-1">STEP 01</span>
+              <h4 class="font-display font-bold text-white text-sm">Send Your Vibe</h4>
+              <p class="text-xs text-zinc-400 mt-1">Pick a theme, input your quote, lyric, car model, or aesthetic vibe.</p>
+            </div>
+            <div class="p-4 bg-zinc-900/80 rounded-xl border border-zinc-800">
+              <span class="font-mono text-drip-pink font-bold text-sm block mb-1">STEP 02</span>
+              <h4 class="font-display font-bold text-white text-sm">Studio Proof in 24h</h4>
+              <p class="text-xs text-zinc-400 mt-1">Our designers create a crisp vector layout and send you the mock.</p>
+            </div>
+            <div class="p-4 bg-zinc-900/80 rounded-xl border border-zinc-800">
+              <span class="font-mono text-drip-purple font-bold text-sm block mb-1">STEP 03</span>
+              <h4 class="font-display font-bold text-white text-sm">Archival Print & Frame</h4>
+              <p class="text-xs text-zinc-400 mt-1">Printed on 300 GSM rag and shipped straight to your dorm door.</p>
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <button onclick="window.navigateTo('custom-order')" class="btn btn-lg bg-drip-lime hover:bg-lime-400 text-black font-display font-black rounded-xl px-8 glow-lime">
+              CREATE CUSTOM POSTER →
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+
+  <!-- #######################################################
+       PAGE 2: SHOP (CATALOG WITH LIVE FILTERING & SORTING)
+       ####################################################### -->
+  <section id="page-shop" class="page-section max-w-7xl mx-auto px-4 py-12">
+    <div class="space-y-4 mb-8">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">PRINT ARCHIVE</span>
+      <h1 class="font-display font-black text-4xl sm:text-6xl text-white uppercase">SHOP ALL POSTERS</h1>
+      <p class="text-zinc-400 text-sm max-w-xl">Every design printed to order on archival cardstock with giclée pigment ink. Available in A4, A3, A2, and A1 sizing.</p>
+    </div>
+
+    <!-- Filter & Sort Bar -->
+    <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4 p-4 bg-zinc-950 rounded-2xl border border-zinc-800 mb-8">
+      <!-- Vibe pills -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 scrollbar-none text-xs">
+        <button class="shop-filter-pill px-4 py-2 rounded-xl bg-drip-lime text-black font-bold transition-all shrink-0" data-filter="all">All Vibes</button>
+        <button class="shop-filter-pill px-4 py-2 rounded-xl bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition-all shrink-0" data-filter="cars">Cars</button>
+        <button class="shop-filter-pill px-4 py-2 rounded-xl bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition-all shrink-0" data-filter="anime">Anime</button>
+        <button class="shop-filter-pill px-4 py-2 rounded-xl bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition-all shrink-0" data-filter="music">Music</button>
+        <button class="shop-filter-pill px-4 py-2 rounded-xl bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition-all shrink-0" data-filter="street">Street</button>
+        <button class="shop-filter-pill px-4 py-2 rounded-xl bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition-all shrink-0" data-filter="minimal">Minimal</button>
+        <button class="shop-filter-pill px-4 py-2 rounded-xl bg-zinc-900 text-zinc-300 hover:text-white border border-zinc-800 transition-all shrink-0" data-filter="dark">Dark Aesthetic</button>
+      </div>
+
+      <!-- Sort dropdown & count -->
+      <div class="flex items-center gap-4 shrink-0">
+        <span id="shop-results-count" class="text-xs font-mono text-zinc-400">12 Prints</span>
+        <select id="shop-sort-select" class="select select-sm bg-zinc-900 border-zinc-700 text-xs font-mono text-white rounded-xl">
+          <option value="trending">Sort: Trending</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Shop Product Grid -->
+    <div id="shop-products-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 3: CATEGORIES
+       ####################################################### -->
+  <section id="page-categories" class="page-section max-w-7xl mx-auto px-4 py-12">
+    <div class="space-y-3 mb-10">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">DISCOVERY INDEX</span>
+      <h1 class="font-display font-black text-4xl sm:text-6xl text-white uppercase">CATEGORIES</h1>
+      <p class="text-zinc-400 text-sm">Find what fits your aesthetic universe.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <div onclick="window.navigateTo('shop')" class="group p-6 bg-zinc-950 rounded-2xl border border-zinc-800 hover:border-drip-lime transition-all cursor-pointer">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-mono text-xs text-drip-lime">01 // TRACK & HYPERCAR</span>
+          <span class="text-xs font-mono text-zinc-500">24 PRINTS</span>
+        </div>
+        <h3 class="font-display font-black text-2xl text-white group-hover:text-drip-lime">Cars & Automotive</h3>
+        <p class="text-zinc-400 text-xs mt-2">JDM legends, Group B rally silhouettes, Monaco telemetry and F1 track maps.</p>
+      </div>
+
+      <div onclick="window.navigateTo('shop')" class="group p-6 bg-zinc-950 rounded-2xl border border-zinc-800 hover:border-drip-purple transition-all cursor-pointer">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-mono text-xs text-drip-purple">02 // CYBER MECHA</span>
+          <span class="text-xs font-mono text-zinc-500">18 PRINTS</span>
+        </div>
+        <h3 class="font-display font-black text-2xl text-white group-hover:text-drip-purple">Anime & Manga</h3>
+        <p class="text-zinc-400 text-xs mt-2">Evangelion inspired vectors, Akira cyberpunk red lines, and retro 90s cel-shading.</p>
+      </div>
+
+      <div onclick="window.navigateTo('shop')" class="group p-6 bg-zinc-950 rounded-2xl border border-zinc-800 hover:border-drip-pink transition-all cursor-pointer">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-mono text-xs text-drip-pink">03 // VINYL & SYNTH</span>
+          <span class="text-xs font-mono text-zinc-500">32 PRINTS</span>
+        </div>
+        <h3 class="font-display font-black text-2xl text-white group-hover:text-drip-pink">Music & Albums</h3>
+        <p class="text-zinc-400 text-xs mt-2">Cassette tape waveforms, brutalist setlists, soundwave geometry, and studio consoles.</p>
+      </div>
+
+      <div onclick="window.navigateTo('shop')" class="group p-6 bg-zinc-950 rounded-2xl border border-zinc-800 hover:border-yellow-400 transition-all cursor-pointer">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-mono text-xs text-yellow-400">04 // STREET CULTURE</span>
+          <span class="text-xs font-mono text-zinc-500">16 PRINTS</span>
+        </div>
+        <h3 class="font-display font-black text-2xl text-white group-hover:text-yellow-400">Street & Acid</h3>
+        <p class="text-zinc-400 text-xs mt-2">Glitch smileys, barcode tape overlays, deconstructed Helvetica, and skateboard decks.</p>
+      </div>
+
+      <div onclick="window.navigateTo('shop')" class="group p-6 bg-zinc-950 rounded-2xl border border-zinc-800 hover:border-emerald-400 transition-all cursor-pointer">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-mono text-xs text-emerald-400">05 // ARCADE & PIXEL</span>
+          <span class="text-xs font-mono text-zinc-500">14 PRINTS</span>
+        </div>
+        <h3 class="font-display font-black text-2xl text-white group-hover:text-emerald-400">Gaming & Battlestation</h3>
+        <p class="text-zinc-400 text-xs mt-2">CRT scanlines, retro handheld blueprints, speedrun stats, and cyberpunk isometric layouts.</p>
+      </div>
+
+      <div onclick="window.navigateTo('shop')" class="group p-6 bg-zinc-950 rounded-2xl border border-zinc-800 hover:border-zinc-300 transition-all cursor-pointer">
+        <div class="flex justify-between items-center mb-4">
+          <span class="font-mono text-xs text-zinc-400">06 // SWISS MODERNISM</span>
+          <span class="text-xs font-mono text-zinc-500">20 PRINTS</span>
+        </div>
+        <h3 class="font-display font-black text-2xl text-white group-hover:text-zinc-200">Minimal & Bauhaus</h3>
+        <p class="text-zinc-400 text-xs mt-2">Geometric architectural arches, strict typography hierarchy, and soothing studio balance.</p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 4: COLLECTIONS
+       ####################################################### -->
+  <section id="page-collections" class="page-section max-w-7xl mx-auto px-4 py-12">
+    <div class="space-y-3 mb-10">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">CURATED SETS</span>
+      <h1 class="font-display font-black text-4xl sm:text-6xl text-white uppercase">COLLECTIONS</h1>
+      <p class="text-zinc-400 text-sm">Editorial thematic bundles styled to look cohesive together on one wall.</p>
+    </div>
+
+    <div class="space-y-8">
+      
+      <!-- Collection Banner 1 -->
+      <div class="relative rounded-3xl bg-zinc-950 border border-zinc-800 p-8 sm:p-12 overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div class="space-y-4 max-w-xl z-10">
+          <span class="px-3 py-1 rounded bg-drip-lime/20 text-drip-lime text-xs font-mono font-bold">COLLECTION 01</span>
+          <h2 class="font-display font-black text-3xl sm:text-5xl text-white uppercase">TOKYO AFTER DARK</h2>
+          <p class="text-zinc-400 text-sm">
+            High octane neon, late-night expressway racing, rainy ramen shop neon signs, and 90s tuning culture. Designed specifically for LED-lit rooms.
+          </p>
+          <div class="flex items-center gap-4 pt-2">
+            <button onclick="window.navigateTo('shop')" class="btn btn-sm bg-drip-lime text-black font-display font-bold">
+              EXPLORE SET (4 PRINTS)
+            </button>
+            <span class="text-xs font-mono text-zinc-400">Save 20% on set</span>
+          </div>
+        </div>
+
+        <div class="flex gap-4 shrink-0 rotate-3">
+          <div class="w-28 sm:w-36 aspect-[4/5] frame-matte-black bg-black rounded overflow-hidden">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#0c0d12"/>
+              <circle cx="200" cy="180" r="100" fill="none" stroke="#CCFF00" stroke-width="2"/>
+              <text x="40" y="80" fill="#CCFF00" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28">R34</text>
+            </svg>
+          </div>
+          <div class="w-28 sm:w-36 aspect-[4/5] frame-matte-black bg-black rounded overflow-hidden">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#120c1e"/>
+              <polygon points="200,80 340,360 60,360" fill="none" stroke="#7C3AED" stroke-width="3"/>
+              <text x="40" y="70" fill="#fff" font-family="'Space Grotesk', sans-serif" font-weight="900" font-size="28">EVA</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collection Banner 2 -->
+      <div class="relative rounded-3xl bg-zinc-950 border border-zinc-800 p-8 sm:p-12 overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
+        <div class="space-y-4 max-w-xl z-10">
+          <span class="px-3 py-1 rounded bg-drip-pink/20 text-drip-pink text-xs font-mono font-bold">COLLECTION 02</span>
+          <h2 class="font-display font-black text-3xl sm:text-5xl text-white uppercase">ANALOG SYNTH VAULT</h2>
+          <p class="text-zinc-400 text-sm">
+            Vintage magnetic tapes, modular synthesizers, retro waveforms, and lo-fi bedroom producer aesthetics.
+          </p>
+          <div class="flex items-center gap-4 pt-2">
+            <button onclick="window.navigateTo('shop')" class="btn btn-sm bg-drip-pink text-white font-display font-bold">
+              EXPLORE SET (3 PRINTS)
+            </button>
+            <span class="text-xs font-mono text-zinc-400">Save 20% on set</span>
+          </div>
+        </div>
+
+        <div class="flex gap-4 shrink-0 -rotate-2">
+          <div class="w-28 sm:w-36 aspect-[4/5] frame-raw-oak bg-black rounded overflow-hidden">
+            <svg viewBox="0 0 400 500" class="w-full h-full block">
+              <rect width="100%" height="100%" fill="#160e15"/>
+              <rect x="50" y="110" width="300" height="190" rx="16" fill="#241422" stroke="#FF3366" stroke-width="2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 6: CUSTOM ORDER STUDIO
+       ####################################################### -->
+  <section id="page-custom-order" class="page-section max-w-7xl mx-auto px-4 py-12">
+    <div class="space-y-3 mb-10 text-center max-w-2xl mx-auto">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">BESPOKE WORKSHOP</span>
+      <h1 class="font-display font-black text-4xl sm:text-6xl text-white uppercase">CUSTOM POSTER LAB</h1>
+      <p class="text-zinc-400 text-sm">
+        Input your own text, car, song lyrics, dorm motto, or gamertag. We generate a custom vector layout and send you a proof within 24 hours.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+      
+      <!-- Creator Form -->
+      <div class="lg:col-span-6 bg-zinc-950 p-6 sm:p-8 rounded-3xl border border-zinc-800 space-y-6">
+        
+        <div>
+          <label class="text-xs font-mono font-bold text-zinc-300 uppercase block mb-2">Select Vector Template Style</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button onclick="window.setCustomStyle('synthwave', this)" class="custom-style-btn py-2.5 px-2 text-xs font-display font-bold rounded-xl border-drip-lime text-drip-lime bg-drip-lime/10">
+              Synth Horizon
+            </button>
+            <button onclick="window.setCustomStyle('brutalist', this)" class="custom-style-btn py-2.5 px-2 text-xs font-display font-bold rounded-xl border border-zinc-700 bg-zinc-900 hover:border-zinc-500">
+              Swiss Brutalist
+            </button>
+            <button onclick="window.setCustomStyle('cyber', this)" class="custom-style-btn py-2.5 px-2 text-xs font-display font-bold rounded-xl border border-zinc-700 bg-zinc-900 hover:border-zinc-500">
+              Cyber Orbit
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-mono font-bold text-zinc-300 uppercase block mb-2">Main Headline / Name / Car Model</label>
+          <input type="text" id="custom-title-input" value="MAIN CHARACTER" class="input input-bordered w-full bg-zinc-900 border-zinc-700 font-display font-bold text-white text-base focus:border-drip-lime focus:outline-none" placeholder="e.g. DORM 404 OR NISSAN S15">
+        </div>
+
+        <div>
+          <label class="text-xs font-mono font-bold text-zinc-300 uppercase block mb-2">Subheadline / Coordinates / Favorite Quote</label>
+          <input type="text" id="custom-subline-input" value="HOSTEL ROOM CHRONICLES // 03:00 AM" class="input input-bordered w-full bg-zinc-900 border-zinc-700 text-xs font-mono text-zinc-300 focus:border-drip-lime focus:outline-none" placeholder="e.g. 51.5074° N, 0.1278° W">
+        </div>
+
+        <div>
+          <label class="text-xs font-mono font-bold text-zinc-300 uppercase block mb-2">Neon Accent Color</label>
+          <div class="flex items-center gap-3">
+            <button onclick="window.setCustomColor('#CCFF00', this)" class="custom-color-btn w-8 h-8 rounded-full bg-[#CCFF00] ring-4 ring-white"></button>
+            <button onclick="window.setCustomColor('#FF3366', this)" class="custom-color-btn w-8 h-8 rounded-full bg-[#FF3366]"></button>
+            <button onclick="window.setCustomColor('#7C3AED', this)" class="custom-color-btn w-8 h-8 rounded-full bg-[#7C3AED]"></button>
+            <button onclick="window.setCustomColor('#00E5FF', this)" class="custom-color-btn w-8 h-8 rounded-full bg-[#00E5FF]"></button>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-zinc-800 flex items-center justify-between">
+          <div>
+            <span class="text-xs text-zinc-400 block font-mono">Custom 1-of-1 Price</span>
+            <span class="font-display font-black text-2xl text-white">$48 <span class="text-xs text-zinc-500 font-mono font-normal">(A2 Framed)</span></span>
+          </div>
+          <button id="add-custom-poster-btn" class="btn bg-drip-lime hover:bg-lime-400 text-black font-display font-black px-6 rounded-xl border-none">
+            ORDER THIS CUSTOM PRINT →
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Live Generated Interactive Preview -->
+      <div class="lg:col-span-6 flex flex-col items-center justify-center p-6 bg-zinc-900/60 rounded-3xl border border-zinc-800">
+        <span class="text-[11px] font-mono text-zinc-400 mb-3 uppercase tracking-wider">LIVE 1-OF-1 PREVIEW CANVAS</span>
+        <div id="custom-live-preview" class="w-72 sm:w-80 aspect-[4/5] frame-matte-black bg-black rounded shadow-2xl transition-all duration-300">
+          <!-- Rendered by updateCustomPreview() -->
+        </div>
+        <p class="text-[11px] font-mono text-zinc-400 text-center mt-4">
+          Vector proof sent to your email for approval prior to archival press printing.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 7: CART (FULL CART VIEW)
+       ####################################################### -->
+  <section id="page-cart" class="page-section max-w-4xl mx-auto px-4 py-12">
+    <div class="space-y-3 mb-8">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">YOUR WALL HAUL</span>
+      <h1 class="font-display font-black text-4xl sm:text-5xl text-white uppercase">SHOPPING BAG</h1>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+      <div class="md:col-span-8 space-y-4" id="full-cart-items-wrapper">
+        <!-- Mirrors the cart drawer items -->
+        <p class="text-zinc-400 text-sm">Review your selected prints and frames before continuing to campus dorm delivery.</p>
+        <button onclick="document.getElementById('open-cart-btn').click()" class="btn btn-sm bg-zinc-800 text-white font-mono">
+          MANAGE BAG ITEMS IN DRAWER ↗
+        </button>
+      </div>
+
+      <div class="md:col-span-4 bg-zinc-950 p-6 rounded-2xl border border-zinc-800 space-y-4">
+        <h3 class="font-display font-bold text-base text-white">ORDER SUMMARY</h3>
+        <p class="text-xs text-zinc-400">All posters shipped in reinforced anti-crush triangular heavy tubes.</p>
+        <button onclick="window.navigateTo('checkout')" class="btn btn-block bg-drip-lime hover:bg-lime-400 text-black font-display font-black rounded-xl">
+          PROCEED TO CHECKOUT →
+        </button>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 8: CHECKOUT (CLEAN DORM-FRIENDLY FORM)
+       ####################################################### -->
+  <section id="page-checkout" class="page-section max-w-4xl mx-auto px-4 py-12">
+    <div class="space-y-3 mb-8">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">SECURE ORDER ENCLAVE</span>
+      <h1 class="font-display font-black text-4xl sm:text-5xl text-white uppercase">DORM CHECKOUT</h1>
+      <p class="text-zinc-400 text-sm">Fast college campus delivery. We deliver directly to student mail rooms & campus post offices.</p>
+    </div>
+
+    <form id="checkout-form" class="grid grid-cols-1 md:grid-cols-12 gap-8">
+      
+      <div class="md:col-span-7 space-y-5 bg-zinc-950 p-6 rounded-2xl border border-zinc-800">
+        <h3 class="font-display font-bold text-lg text-white">1. Student Contact & Dorm Address</h3>
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs font-mono text-zinc-400 block mb-1">First Name</label>
+            <input required type="text" class="input input-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="Alex">
+          </div>
+          <div>
+            <label class="text-xs font-mono text-zinc-400 block mb-1">Last Name</label>
+            <input required type="text" class="input input-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="Vance">
+          </div>
+        </div>
+
+        <div>
+          <label class="text-xs font-mono text-zinc-400 block mb-1">Student / Personal Email</label>
+          <input required type="email" class="input input-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="alex@campus.edu">
+        </div>
+
+        <div>
+          <label class="text-xs font-mono text-zinc-400 block mb-1">University / College Name (Optional)</label>
+          <input type="text" class="input input-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="State Tech University">
+        </div>
+
+        <div>
+          <label class="text-xs font-mono text-zinc-400 block mb-1">Dorm / Residence Hall & Room #</label>
+          <input required type="text" class="input input-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="West Quad Hall, Room 314B">
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="text-xs font-mono text-zinc-400 block mb-1">City</label>
+            <input required type="text" class="input input-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="College Town">
+          </div>
+          <div>
+            <label class="text-xs font-mono text-zinc-400 block mb-1">ZIP / Postal Code</label>
+            <input required type="text" class="input input-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="90210">
+          </div>
+        </div>
+
+        <h3 class="font-display font-bold text-lg text-white pt-4 border-t border-zinc-800">2. Payment Method</h3>
+        <div class="space-y-2">
+          <label class="flex items-center gap-3 p-3 bg-zinc-900 rounded-xl border border-zinc-700 cursor-pointer">
+            <input type="radio" name="pay-method" checked class="radio radio-xs radio-success">
+            <span class="text-xs font-mono text-white">Credit / Debit Card (Apple Pay / Google Pay supported)</span>
+          </label>
+          <label class="flex items-center gap-3 p-3 bg-zinc-900 rounded-xl border border-zinc-700 cursor-pointer">
+            <input type="radio" name="pay-method" class="radio radio-xs radio-success">
+            <span class="text-xs font-mono text-white">Campus Pay / Student UPI / Split Bills</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="md:col-span-5 space-y-4">
+        <div class="bg-zinc-950 p-6 rounded-2xl border border-zinc-800 space-y-4">
+          <h3 class="font-display font-bold text-base text-white">PAYMENT BREAKDOWN</h3>
+          
+          <div class="space-y-2 text-xs font-mono text-zinc-400">
+            <div class="flex justify-between">
+              <span>Standard Campus Shipping</span>
+              <span class="text-drip-lime">FREE ($0)</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Hanging Strips Pack</span>
+              <span class="text-white">INCLUDED FREE</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Carbon Neutral Offset</span>
+              <span class="text-white">$0.00</span>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-zinc-800">
+            <label class="text-xs font-mono text-zinc-400 block mb-1">Promo / Campus Ambassador Code</label>
+            <div class="flex gap-2">
+              <input type="text" value="DORM10" class="input input-sm bg-zinc-900 border-zinc-700 font-mono text-xs text-drip-lime flex-1">
+              <button type="button" class="btn btn-sm bg-zinc-800 text-white text-xs">APPLY</button>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-block bg-drip-lime hover:bg-lime-400 text-black font-display font-black text-sm rounded-xl py-3 mt-4 glow-lime">
+            PLACE DORM ORDER →
+          </button>
+          
+          <p class="text-[10px] text-zinc-500 font-mono text-center">
+            256-bit encrypted checkout. Shipped within 48h.
+          </p>
+        </div>
+      </div>
+
+    </form>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 9: ORDER CONFIRMATION
+       ####################################################### -->
+  <section id="page-order-confirmation" class="page-section max-w-2xl mx-auto px-4 py-16 text-center">
+    <div class="w-20 h-20 bg-drip-lime/20 text-drip-lime rounded-full mx-auto flex items-center justify-center text-4xl mb-6 border border-drip-lime/40">
+      ✓
+    </div>
+    
+    <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">ORDER SUCCESSFUL</span>
+    <h1 class="font-display font-black text-4xl sm:text-5xl text-white uppercase mt-1">YOUR WALL IS ABOUT TO UPGRADE</h1>
+    <p class="text-zinc-400 text-sm mt-3 max-w-md mx-auto">
+      We received your order. Our print studio is now loading the 300 GSM cotton rag paper into the archival pigment printers.
+    </p>
+
+    <div class="my-8 p-6 bg-zinc-950 rounded-2xl border border-zinc-800 text-left font-mono text-xs space-y-2">
+      <div class="flex justify-between">
+        <span class="text-zinc-500">ORDER NUMBER:</span>
+        <span class="text-white font-bold">#DRP-88419</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-zinc-500">ESTIMATED DISPATCH:</span>
+        <span class="text-drip-lime">Tomorrow, 11:00 AM</span>
+      </div>
+      <div class="flex justify-between">
+        <span class="text-zinc-500">FREE HANGING PACK:</span>
+        <span class="text-white">Included (Command Strips)</span>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-center gap-4">
+      <button onclick="window.navigateTo('track')" class="btn btn-sm bg-zinc-800 text-white font-mono">
+        TRACK THIS ORDER →
+      </button>
+      <button onclick="window.navigateTo('shop')" class="btn btn-sm bg-drip-lime text-black font-display font-bold">
+        KEEP EXPLORING
+      </button>
+    </div>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 10: TRACK ORDER
+       ####################################################### -->
+  <section id="page-track" class="page-section max-w-3xl mx-auto px-4 py-12">
+    <div class="space-y-3 mb-8 text-center">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">REAL-TIME TELEMETRY</span>
+      <h1 class="font-display font-black text-4xl sm:text-5xl text-white uppercase">TRACK YOUR ORDER</h1>
+      <p class="text-zinc-400 text-sm">Enter your Order ID or phone number to see printing and transit status.</p>
+    </div>
+
+    <div class="flex gap-2 max-w-md mx-auto mb-10">
+      <input id="track-input-id" type="text" value="DRP-88419" class="input input-bordered w-full bg-zinc-900 border-zinc-700 font-mono text-sm text-white focus:border-drip-lime" placeholder="e.g. DRP-88419">
+      <button id="track-order-submit" class="btn bg-drip-lime hover:bg-lime-400 text-black font-display font-bold px-6">
+        LOOKUP
+      </button>
+    </div>
+
+    <!-- Live Status Result Component -->
+    <div id="track-result-card" class="bg-zinc-950 p-6 sm:p-8 rounded-2xl border border-zinc-800 space-y-6">
+      <div class="flex items-center justify-between pb-4 border-b border-zinc-800">
+        <div>
+          <span class="text-xs font-mono text-zinc-500">TRACKING ORDER</span>
+          <h3 id="track-display-id" class="font-display font-black text-xl text-white">DRP-88419</h3>
+        </div>
+        <span class="px-3 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 rounded text-xs font-mono font-bold">
+          IN TRANSIT
+        </span>
+      </div>
+
+      <!-- Steps Timeline -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs font-mono">
+        <div class="p-3 bg-zinc-900 rounded-xl border border-drip-lime/40">
+          <span class="text-drip-lime block font-bold mb-1">✓ 1. ORDER RECEIVED</span>
+          <span class="text-zinc-400 text-[11px]">Archival queued</span>
+        </div>
+        <div class="p-3 bg-zinc-900 rounded-xl border border-drip-lime/40">
+          <span class="text-drip-lime block font-bold mb-1">✓ 2. GICLÉE PRINTED</span>
+          <span class="text-zinc-400 text-[11px]">300 GSM inspected</span>
+        </div>
+        <div class="p-3 bg-zinc-900 rounded-xl border border-emerald-400">
+          <span class="text-emerald-400 block font-bold mb-1">🚚 3. COURIER DROP</span>
+          <span class="text-zinc-400 text-[11px]">Campus hub inbound</span>
+        </div>
+        <div class="p-3 bg-zinc-900/50 rounded-xl border border-zinc-800 opacity-50">
+          <span class="text-zinc-500 block font-bold mb-1">○ 4. DORM DELIVERED</span>
+          <span class="text-zinc-600 text-[11px]">Ready to hang</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 11: ABOUT US
+       ####################################################### -->
+  <section id="page-about" class="page-section max-w-4xl mx-auto px-4 py-12">
+    <div class="space-y-4 mb-10">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">THE MANIFESTO</span>
+      <h1 class="font-display font-black text-4xl sm:text-6xl text-white uppercase">WHY WE BUILT DRIPSTER</h1>
+    </div>
+
+    <div class="space-y-6 text-zinc-300 text-base leading-relaxed">
+      <p class="text-xl font-medium text-white">
+        College hostel rooms and dorms often look like hospital waiting wards: blank eggshell-white cinder blocks, flickering fluorescent lights, and completely devoid of character.
+      </p>
+      
+      <p>
+        Most poster brands either sell blurry pixelated low-res prints ripped from Google Images on flimsy printer paper, or charge $120 for "gallery art" that no college student can afford.
+      </p>
+
+      <p>
+        DRIPSTER was started in a design school dorm room to fix this exact imbalance. We treat wall prints the same way streetwear brands treat heavyweight hoodies: ultra-saturated pigment inks, genuine 300 GSM museum-grade cotton cardstock, curated modern typography, and frames designed to mount with zero damage to college dorm walls.
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-6">
+        <div class="p-5 bg-zinc-950 rounded-2xl border border-zinc-800">
+          <span class="font-display font-black text-3xl text-drip-lime">300 GSM</span>
+          <h4 class="font-display font-bold text-white text-sm mt-1">Archival Velvet Paper</h4>
+          <p class="text-xs text-zinc-400 mt-1">Thick enough that it won't wrinkle, curl, or rip when moving rooms.</p>
+        </div>
+        <div class="p-5 bg-zinc-950 rounded-2xl border border-zinc-800">
+          <span class="font-display font-black text-3xl text-drip-pink">12-COLOR</span>
+          <h4 class="font-display font-bold text-white text-sm mt-1">UltraChrome Giclée</h4>
+          <p class="text-xs text-zinc-400 mt-1">Electric neons, pitch blacks, and rich gradients that stay vivid for decades.</p>
+        </div>
+        <div class="p-5 bg-zinc-950 rounded-2xl border border-zinc-800">
+          <span class="font-display font-black text-3xl text-drip-purple">ZERO HOLES</span>
+          <h4 class="font-display font-bold text-white text-sm mt-1">Landlord Safe</h4>
+          <p class="text-xs text-zinc-400 mt-1">Every framed order includes commercial damage-free hanging hardware.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 12: FAQ
+       ####################################################### -->
+  <section id="page-faq" class="page-section max-w-3xl mx-auto px-4 py-12">
+    <div class="space-y-3 mb-10 text-center">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">GOT QUESTIONS?</span>
+      <h1 class="font-display font-black text-4xl sm:text-5xl text-white uppercase">FREQUENTLY ASKED</h1>
+      <p class="text-zinc-400 text-sm">Everything you need to know about sizing, framing, and college delivery.</p>
+    </div>
+
+    <div class="space-y-4">
+      <div class="collapse collapse-plus bg-zinc-950 border border-zinc-800 rounded-2xl">
+        <input type="radio" name="my-accordion-3" checked="checked" />
+        <div class="collapse-title font-display font-bold text-white text-base">
+          Will these ruin my hostel / dorm walls when I move out?
+        </div>
+        <div class="collapse-content text-zinc-400 text-sm">
+          <p>No! Every single order includes a pack of removable damage-free hanging strips. They peel off cleanly without chipping paint or leaving sticky residue so you get 100% of your room deposit back.</p>
+        </div>
+      </div>
+
+      <div class="collapse collapse-plus bg-zinc-950 border border-zinc-800 rounded-2xl">
+        <input type="radio" name="my-accordion-3" />
+        <div class="collapse-title font-display font-bold text-white text-base">
+          What paper quality do you use?
+        </div>
+        <div class="collapse-content text-zinc-400 text-sm">
+          <p>We use heavyweight 300 GSM cotton rag with a smooth satin-matte finish. It has zero annoying glare under desk lamps and feels like luxury art gallery board, not flimsy poster gloss.</p>
+        </div>
+      </div>
+
+      <div class="collapse collapse-plus bg-zinc-950 border border-zinc-800 rounded-2xl">
+        <input type="radio" name="my-accordion-3" />
+        <div class="collapse-title font-display font-bold text-white text-base">
+          Can you deliver straight to my college mail room?
+        </div>
+        <div class="collapse-content text-zinc-400 text-sm">
+          <p>Yes. Just enter your campus address, hall name, and box number at checkout. Our carriers drop directly to university post counters daily.</p>
+        </div>
+      </div>
+
+      <div class="collapse collapse-plus bg-zinc-950 border border-zinc-800 rounded-2xl">
+        <input type="radio" name="my-accordion-3" />
+        <div class="collapse-title font-display font-bold text-white text-base">
+          What does the "Drop" mean? Are they ever restocked?
+        </div>
+        <div class="collapse-content text-zinc-400 text-sm">
+          <p>Pieces marked "THE DROP" or "LIMITED EDITION" are capped at strictly 50 to 120 numbered prints. Once an edition sells out, the vector plates are retired forever.</p>
+        </div>
+      </div>
+
+      <div class="collapse collapse-plus bg-zinc-950 border border-zinc-800 rounded-2xl">
+        <input type="radio" name="my-accordion-3" />
+        <div class="collapse-title font-display font-bold text-white text-base">
+          How does the Custom 1-of-1 order work?
+        </div>
+        <div class="collapse-content text-zinc-400 text-sm">
+          <p>You choose a style in our Custom Order page and enter your custom text or concept. Our design crew drafts a vector mockup in 24 hours. Once you review and approve it, we print and ship within 48 hours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- #######################################################
+       PAGE 13: CONTACT
+       ####################################################### -->
+  <section id="page-contact" class="page-section max-w-4xl mx-auto px-4 py-12">
+    <div class="space-y-3 mb-10">
+      <span class="text-drip-lime font-mono text-xs tracking-widest uppercase">DIRECT TRANSMISSION</span>
+      <h1 class="font-display font-black text-4xl sm:text-6xl text-white uppercase">CONTACT US</h1>
+      <p class="text-zinc-400 text-sm">Campus ambassador programs, custom dorm bulk orders, or shipping questions.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+      
+      <!-- Contact Form -->
+      <div class="md:col-span-7 bg-zinc-950 p-6 rounded-2xl border border-zinc-800 space-y-4">
+        <div>
+          <label class="text-xs font-mono text-zinc-400 block mb-1">Your Name</label>
+          <input type="text" class="input input-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="Jordan">
+        </div>
+
+        <div>
+          <label class="text-xs font-mono text-zinc-400 block mb-1">Your Email</label>
+          <input type="email" class="input input-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="jordan@campus.edu">
+        </div>
+
+        <div>
+          <label class="text-xs font-mono text-zinc-400 block mb-1">Subject / Inquiry</label>
+          <select class="select select-sm w-full bg-zinc-900 border-zinc-700 text-xs text-white">
+            <option>Order Status / Delivery</option>
+            <option>Custom Artwork Request</option>
+            <option>Campus Ambassador Program</option>
+            <option>Wholesale Dorm Pack</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="text-xs font-mono text-zinc-400 block mb-1">Message</label>
+          <textarea rows="4" class="textarea textarea-sm w-full bg-zinc-900 border-zinc-700 text-white focus:border-drip-lime" placeholder="Tell us what you need..."></textarea>
+        </div>
+
+        <button type="button" onclick="alert('Message sent to our dorm art desk! We will reply within 24 hours.')" class="btn btn-block bg-drip-lime text-black font-display font-bold">
+          SEND MESSAGE →
+        </button>
+      </div>
+
+      <!-- Studio Details (with obviously blank placeholders for owner) -->
+      <div class="md:col-span-5 bg-zinc-950 p-6 rounded-2xl border border-zinc-800 space-y-6">
+        <div>
+          <span class="text-xs font-mono text-drip-lime uppercase block mb-1">STUDIO LAB LOCATION</span>
+          <p class="text-sm font-medium text-white">[Insert Studio Address — College Station / Design Lab]</p>
+        </div>
+
+        <div>
+          <span class="text-xs font-mono text-drip-lime uppercase block mb-1">CUSTOMER SUPPORT LINE</span>
+          <p class="text-sm font-medium text-white">[Insert Phone Number]</p>
+        </div>
+
+        <div>
+          <span class="text-xs font-mono text-drip-lime uppercase block mb-1">HOURS OF OPERATION</span>
+          <p class="text-sm font-medium text-white">[Insert Hours: Mon–Fri, 10:00 AM – 6:00 PM]</p>
+        </div>
+
+        <div class="pt-4 border-t border-zinc-800">
+          <span class="text-xs font-mono text-zinc-400 block mb-2">CAMPUS AMBASSADOR PERKS</span>
+          <p class="text-xs text-zinc-400">
+            Want free posters for your dorm in exchange for tagging us on campus TikTok / IG? Mention "Ambassador" in your message!
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- #######################################################
+       SLIDE-OVER CART DRAWER
+       ####################################################### -->
+  <div id="cart-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-xs z-50 hidden transition-opacity"></div>
+  
+  <div id="cart-drawer" class="fixed top-0 right-0 h-full w-full max-w-md bg-[#101217] border-l border-zinc-800 z-50 translate-x-full transition-transform duration-300 flex flex-col shadow-2xl">
+    
+    <!-- Drawer Header -->
+    <div class="p-5 border-b border-zinc-800 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <h3 class="font-display font-black text-lg text-white">YOUR WALL BAG</h3>
+        <span class="badge badge-sm bg-drip-lime text-black font-mono font-bold">LIVE</span>
+      </div>
+      <button id="close-cart-btn" class="btn btn-circle btn-sm btn-ghost text-zinc-400 hover:text-white">✕</button>
+    </div>
+
+    <!-- Free Delivery Progress Bar -->
+    <div class="px-5 py-2.5 bg-zinc-900 border-b border-zinc-800 text-xs font-mono flex items-center justify-between text-zinc-300">
+      <span>🚚 FREE DORM DELIVERY APPLIED</span>
+      <span class="text-drip-lime font-bold">ACTIVE</span>
+    </div>
+
+    <!-- Items Scroll Container -->
+    <div id="cart-items-container" class="flex-1 overflow-y-auto p-5 space-y-3">
+      <!-- Populated by JS renderCartList() -->
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="p-5 border-t border-zinc-800 bg-[#0c0e12] space-y-3">
+      <div class="space-y-1.5 text-xs text-zinc-400">
+        <div class="flex justify-between">
+          <span>Subtotal</span>
+          <span id="cart-subtotal" class="font-mono text-white">$24</span>
+        </div>
+        <div class="flex justify-between text-drip-lime">
+          <span>Set Bundle Discount</span>
+          <span id="cart-bundle-discount" class="font-mono">$0</span>
+        </div>
+        <div class="flex justify-between text-sm font-display font-black text-white pt-2 border-t border-zinc-800">
+          <span>Estimated Total</span>
+          <span id="cart-total-price" class="text-drip-lime text-lg font-mono">$24</span>
+        </div>
+      </div>
+
+      <button onclick="window.navigateTo('checkout'); document.getElementById('close-cart-btn').click();" class="btn btn-block bg-drip-lime hover:bg-lime-400 text-black font-display font-black rounded-xl text-sm glow-lime border-none">
+        CHECKOUT NOW →
+      </button>
+
+      <button onclick="window.navigateTo('shop'); document.getElementById('close-cart-btn').click();" class="btn btn-block btn-ghost btn-xs text-zinc-400 hover:text-white font-mono">
+        CONTINUE BROWSING PRINTS
+      </button>
+    </div>
+
+  </div>
+
+
+  <!-- #######################################################
+       PRODUCT DETAIL MODAL (PAGE 5 REQUIREMENT)
+       ####################################################### -->
+  <dialog id="product-detail-modal" class="modal bg-black/85 backdrop-blur-md">
+    <div class="modal-box max-w-4xl bg-[#14161D] border border-zinc-800 p-6 sm:p-8 rounded-3xl text-left">
+      <form method="dialog">
+        <button class="btn btn-sm btn-circle btn-ghost absolute right-4 top-4 text-zinc-400 hover:text-white">✕</button>
+      </form>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+        
+        <!-- Artwork Interactive Display -->
+        <div class="md:col-span-6 flex flex-col items-center justify-center">
+          <div id="modal-artwork-preview" class="w-full max-w-sm aspect-[4/5] frame-matte-black bg-black rounded shadow-2xl transition-all duration-300">
+            <!-- Rendered by window.openProductModal -->
+          </div>
+          <span class="text-[10px] font-mono text-zinc-400 mt-3">300 GSM Heavyweight Archival Cotton Rag</span>
+        </div>
+
+        <!-- Product Specs & Configurator -->
+        <div class="md:col-span-6 space-y-4">
+          <span id="modal-category" class="text-drip-lime font-mono text-xs uppercase tracking-wider">CATEGORY</span>
+          <h2 id="modal-title" class="font-display font-black text-2xl sm:text-3xl text-white uppercase">PRODUCT TITLE</h2>
+          <span id="modal-price" class="font-display font-black text-2xl text-white block">$24</span>
+          <p id="modal-desc" class="text-zinc-400 text-xs leading-relaxed">Product description copy.</p>
+
+          <!-- 1. Size Pills -->
+          <div>
+            <label class="text-xs font-mono font-bold text-zinc-300 uppercase block mb-1.5">Select Size</label>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <button onclick="window.setModalSize('A4 (8 × 12 in)', -4, this)" class="modal-size-btn p-2 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-500 font-mono text-left">
+                <span class="font-bold block">A4</span>
+                <span class="text-[10px] text-zinc-500">8 × 12" (-$4)</span>
+              </button>
+              <button onclick="window.setModalSize('A3 (12 × 18 in)', 0, this)" class="modal-size-btn p-2 rounded-xl border-drip-lime text-drip-lime bg-drip-lime/10 font-mono text-left">
+                <span class="font-bold block">A3 (Most Popular)</span>
+                <span class="text-[10px] text-drip-lime/80">12 × 18" (Standard)</span>
+              </button>
+              <button onclick="window.setModalSize('A2 (18 × 24 in)', 6, this)" class="modal-size-btn p-2 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-500 font-mono text-left">
+                <span class="font-bold block">A2 Large</span>
+                <span class="text-[10px] text-zinc-500">18 × 24" (+$6)</span>
+              </button>
+              <button onclick="window.setModalSize('A1 (24 × 36 in)', 14, this)" class="modal-size-btn p-2 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-500 font-mono text-left">
+                <span class="font-bold block">A1 Statement</span>
+                <span class="text-[10px] text-zinc-500">24 × 36" (+$14)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 2. Framing Finish Options -->
+          <div>
+            <label class="text-xs font-mono font-bold text-zinc-300 uppercase block mb-1.5">Frame Choice</label>
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <button onclick="window.setModalFrame('Matte Black Aluminum', 14, 'frame-matte-black', this)" class="modal-frame-btn p-2 rounded-xl border-drip-lime text-drip-lime bg-drip-lime/10 font-mono text-left">
+                <span class="font-bold block">Matte Black</span>
+                <span class="text-[10px] text-zinc-400">+$14 (Ready to hang)</span>
+              </button>
+              <button onclick="window.setModalFrame('Natural Oak Wood', 16, 'frame-raw-oak', this)" class="modal-frame-btn p-2 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-500 font-mono text-left">
+                <span class="font-bold block">Natural Oak</span>
+                <span class="text-[10px] text-zinc-400">+$16 (Solid wood)</span>
+              </button>
+              <button onclick="window.setModalFrame('Neon Volt Frame', 16, 'frame-neon-volt', this)" class="modal-frame-btn p-2 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-500 font-mono text-left">
+                <span class="font-bold block">Neon Volt</span>
+                <span class="text-[10px] text-zinc-400">+$16 (Statement)</span>
+              </button>
+              <button onclick="window.setModalFrame('Unframed Print Only', 0, 'frame-frameless', this)" class="modal-frame-btn p-2 rounded-xl border border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-zinc-500 font-mono text-left">
+                <span class="font-bold block">Print Only</span>
+                <span class="text-[10px] text-zinc-400">+$0 (Tube Roll)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Total & Add to cart -->
+          <div class="pt-4 border-t border-zinc-800 flex items-center justify-between">
+            <div>
+              <span class="text-xs text-zinc-400 block font-mono">Total Price</span>
+              <span id="modal-calculated-price" class="font-display font-black text-2xl text-drip-lime font-mono">$38</span>
+            </div>
+            <button id="modal-add-to-cart-btn" class="btn bg-drip-lime hover:bg-lime-400 text-black font-display font-black px-6 rounded-xl">
+              ADD TO BAG →
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </dialog>
+
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="bg-black border-t border-zinc-900 pt-16 pb-12 px-4 sm:px-6">
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 pb-12 border-b border-zinc-900">
+      
+      <!-- Brand column -->
+      <div class="md:col-span-5 space-y-4">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-drip-lime text-black flex items-center justify-center font-display font-black text-xl">D</div>
+          <span class="font-display font-black text-2xl tracking-tight text-white">DRIP<span class="text-drip-lime">STER</span></span>
+        </div>
+        <p class="text-zinc-400 text-sm max-w-sm">
+          Turn empty walls into something worth staring at. Independent college wall art & streetwear print house.
+        </p>
+        <div class="text-xs font-mono text-zinc-500">
+          ARCHIVAL INKJET // 300 GSM COTTON // CAMPUS EXPEDITE
+        </div>
+      </div>
+
+      <!-- Quick Nav -->
+      <div class="md:col-span-2 space-y-3">
+        <h4 class="font-display font-bold text-sm text-white uppercase tracking-wider">Pages</h4>
+        <ul class="space-y-2 text-xs font-medium text-zinc-400">
+          <li><a href="#" data-nav-target="shop" class="hover:text-drip-lime">Shop All Prints</a></li>
+          <li><a href="#" data-nav-target="categories" class="hover:text-drip-lime">Vibe Categories</a></li>
+          <li><a href="#" data-nav-target="collections" class="hover:text-drip-lime">Limited Drops</a></li>
+          <li><a href="#" data-nav-target="custom-order" class="hover:text-drip-lime text-drip-pink">Custom 1-of-1 Art</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div class="md:col-span-2 space-y-3">
+        <h4 class="font-display font-bold text-sm text-white uppercase tracking-wider">Help & Dorms</h4>
+        <ul class="space-y-2 text-xs font-medium text-zinc-400">
+          <li><a href="#" data-nav-target="track" class="hover:text-drip-lime">Track Order</a></li>
+          <li><a href="#" data-nav-target="faq" class="hover:text-drip-lime">Size Guide & FAQ</a></li>
+          <li><a href="#" data-nav-target="about" class="hover:text-drip-lime">Our Story</a></li>
+          <li><a href="#" data-nav-target="contact" class="hover:text-drip-lime">Contact Studio</a></li>
+        </ul>
+      </div>
+
+      <!-- Newsletter / Campus Drop Alerts -->
+      <div class="md:col-span-3 space-y-3">
+        <h4 class="font-display font-bold text-sm text-white uppercase tracking-wider">CAMPUS DROP ALERTS</h4>
+        <p class="text-xs text-zinc-400">Be first to know when 100-piece numbered vaults go live.</p>
+        <div class="flex gap-2">
+          <input type="email" placeholder="student@campus.edu" class="input input-sm bg-zinc-900 border-zinc-800 text-xs text-white rounded-lg flex-1">
+          <button onclick="alert('Subscribed to campus drop vault!')" class="btn btn-sm bg-drip-lime text-black font-display font-bold">JOIN</button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Copyright -->
+    <div class="max-w-7xl mx-auto pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-600 font-mono gap-4">
+      <div>
+        © DRIPSTER STUDIOS. ALL RIGHTS RESERVED.
+      </div>
+      <div class="flex gap-6">
+        <span>CAMPUS DORM VERIFIED</span>
+        <span>NO NAILS NEEDED</span>
+        <span>ARCHIVAL RECYCLABLE PACKAGING</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
